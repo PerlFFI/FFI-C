@@ -65,6 +65,9 @@ is(
   object {
     call [ isa => 'FFI::Struct' ] => T();
     call create => object {
+      call sub { shift->foo       } => 0;
+      call sub { shift->bar       } => 0;
+      call sub { shift->baz       } => 0;
       call sub { shift->foo(22)   } => 22;
       call sub { shift->bar(1900) } => 1900;
       call sub { shift->baz(-500) } => -500;

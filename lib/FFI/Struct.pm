@@ -5,8 +5,9 @@ use warnings;
 use 5.008001;
 use Ref::Util qw( is_blessed_ref );
 use FFI::Platypus 1.00;
-use FFI::Platypus::Memory qw( malloc memset );
+use FFI::Platypus::Memory qw( malloc );
 use Carp ();
+use constant memset => FFI::Platypus->new( lib => [undef] )->find_symbol( 'memset' );
 
 # ABSTRACT: Structured data types for FFI
 # VERSION
@@ -151,6 +152,8 @@ sub create
   my($self) = @_;
 
   my $ptr = malloc($self->size);
+  $self->ffi->function( memset() => ['opaque','int','size_t'] => 'opaque' )
+    ->call($ptr, 0, $self->size);
 
   bless {
     ptr    => $ptr,
