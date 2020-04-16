@@ -3,11 +3,12 @@ package FFI::Struct;
 use strict;
 use warnings;
 use 5.008001;
-use Ref::Util qw( is_blessed_ref is_plain_arrayref );
 use FFI::Platypus 1.11;
+use Ref::Util qw( is_blessed_ref is_plain_arrayref );
 use FFI::Platypus::Memory qw( malloc );
 use Carp ();
 use constant memset => FFI::Platypus->new( lib => [undef] )->find_symbol( 'memset' );
+use constant _is_union => 0;
 
 # ABSTRACT: Structured data types for FFI
 # VERSION
@@ -88,20 +89,23 @@ sub new
       }
       $self->{align} = $member{align} if $member{align} > $self->{align};
 
-      $offset++ while $offset % $member{align};
-      $member{offset} = $offset;
-      $offset += $member{size};
+      if($self->_is_union)
+      {
+        $self->{size} = $member{size} if $member{size} > $self->{size};
+        $member{offset} = 0;
+      }
+      else
+      {
+        $offset++ while $offset % $member{align};
+        $member{offset} = $offset;
+        $offset += $member{size};
+      }
 
       $self->{members}->{$name} = \%member;
     }
   }
 
-  $self->{size} = $offset;
-
-  # TODO: this is needed if malloc(0) returns undef.
-  # we could special case for platforms where malloc(0)
-  # returns a constant pointer that can be free()'d
-  $self->{size} = 1 if $self->{size} == 0;
+  $self->{size} = $offset unless $self->_is_union;
 
   Carp::carp("Unknown argument: $_") for sort keys %args;
 
@@ -170,16 +174,22 @@ sub create
   }
   else
   {
-    $ptr = malloc($self->size);
+    # TODO: we use 1 byte for size 0
+    # this is needed if malloc(0) returns undef.
+    # we could special case for platforms where malloc(0)
+    # returns a constant pointer that can be free()'d
+    $ptr = malloc($self->size ? $self->size : 1);
     $self->ffi->function( memset() => ['opaque','int','size_t'] => 'opaque' )
       ->call($ptr, 0, $self->size);
   }
+
+  my $class = ref($self) . "::Instance";
 
   bless {
     ptr    => $ptr,
     def    => $self,
     owner  => $owner,
-  }, 'FFI::Struct::Instance';
+  }, $class;
 }
 
 package FFI::Struct::Instance;

@@ -30,7 +30,7 @@ is(
     call ffi => object {
       call [ isa => 'FFI::Platypus' ] => T();
     };
-    call size => 1;
+    call size => 0;
     call align => match qr/^[0-9]+$/;
     call create => object {
       call [ isa => 'FFI::Struct::Instance' ] => T();
@@ -49,7 +49,7 @@ is(
     call ffi => object {
       call [ isa => 'FFI::Platypus' ] => T();
     };
-    call size => 1;
+    call size => 0;
     call align => match qr/^[0-9]+$/;
     call create => object {
       call [ isa => 'FFI::Struct::Instance' ] => T();
@@ -68,7 +68,7 @@ is(
     call ffi => object {
       call [ isa => 'FFI::Platypus' ] => T();
     };
-    call size => 1;
+    call size => 0;
     call align => match qr/^[0-9]+$/;
     call create => object {
       call [ isa => 'FFI::Struct::Instance' ] => T();
@@ -121,14 +121,18 @@ is(
   FFI::Struct->new( members => [
     foo => 'uint8',
     bar => FFI::Struct->new( members => [
-      baz => 'uint32',
+      baz => 'sint32',
     ]),
   ]),
   object {
     call [ isa => 'FFI::Struct' ] => T();
     call create => object {
-      call sub { shift->foo         } => 0;
-      call sub { shift->bar->baz    } => 0;
+      call sub { shift->foo             } => 0;
+      call sub { shift->bar->baz        } => 0;
+      call sub { shift->foo(200)        } => 200;
+      call sub { shift->bar->baz(-9999) } => -9999;
+      call sub { shift->foo             } => 200;
+      call sub { shift->bar->baz        } => -9999;
     },
   },
   'nested'
