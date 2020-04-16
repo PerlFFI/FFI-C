@@ -3,6 +3,7 @@ package FFI::C::StructDef;
 use strict;
 use warnings;
 use 5.008001;
+use FFI::C::Struct;
 use FFI::Platypus 1.11;
 use Ref::Util qw( is_blessed_ref is_plain_arrayref );
 use FFI::Platypus::Memory qw( malloc );
@@ -10,7 +11,7 @@ use Carp ();
 use constant memset => FFI::Platypus->new( lib => [undef] )->find_symbol( 'memset' );
 use constant _is_union => 0;
 
-# ABSTRACT: Structured data types for FFI
+# ABSTRACT: Structured data definition for FFI
 # VERSION
 
 =head1 CONSTRUCTOR
@@ -191,44 +192,6 @@ sub create
     def    => $self,
     owner  => $owner,
   }, $class;
-}
-
-package FFI::C::Struct;
-
-use FFI::Platypus::Memory ();
-use constant memcpy => FFI::Platypus->new( lib => [undef] )->find_symbol( 'memcpy' );
-
-sub AUTOLOAD
-{
-  our $AUTOLOAD;
-  my $self = shift;
-  my $name = $AUTOLOAD;
-  $name=~ s/^.*:://;
-  if(my $member = $self->{def}->{members}->{$name})
-  {
-    my $ptr = $self->{ptr} + $member->{offset};
-    return $member->{nest}->create([$ptr,$self]) if $member->{nest};
-    my $ffi = $self->{def}->ffi;
-    if(@_)
-    {
-      $ffi->function( memcpy() => [ 'opaque', $member->{spec} . "*", 'size_t' ] => 'opaque' )
-          ->call($ptr, \$_[0], $member->{size});
-    }
-    return ${ $ffi->cast( 'opaque' => $member->{spec} . "*", $ptr ) };
-  }
-  else
-  {
-    Carp::croak("No such member: $name");
-  }
-}
-
-sub DESTROY
-{
-  my($self) = @_;
-  if($self->{ptr} && !$self->{owner})
-  {
-    FFI::Platypus::Memory::free(delete $self->{ptr});
-  }
 }
 
 1;
