@@ -10,6 +10,7 @@ use Ref::Util qw( is_blessed_ref is_plain_arrayref );
 use FFI::Platypus::Memory qw( malloc );
 use Carp ();
 use constant _is_union => 0;
+use base qw( FFI::C::Def );
 
 # ABSTRACT: Structured data definition for FFI
 # VERSION
@@ -17,16 +18,6 @@ use constant _is_union => 0;
 =head1 CONSTRUCTOR
 
 =head2 new
-
- my $struct = FFI::C::StructDef->new(%options);
-
-=over 4
-
-=item name
-
-The name of the struct.
-
-=back
 
 =cut
 
@@ -75,7 +66,7 @@ sub new
 
       if(is_blessed_ref $spec)
       {
-        if($spec->isa('FFI::C::StructDef'))
+        if($spec->isa('FFI::C::Def'))
         {
           $member{nest}  = $spec;
           $member{size}  = $spec->size;
@@ -115,51 +106,7 @@ sub new
 
 =head1 METHODS
 
-=head2 name
-
- my $name = $struct->name;
-
-Returns the name of the struct.
-
-=cut
-
-sub name { shift->{name} }
-
-=head2 ffi
-
- my $ffi = $struct->ffi;
-
-Returns the L<FFI::Platypus> instance for this struct.
-
-=cut
-
-sub ffi { shift->{ffi} }
-
-=head2 size
-
- my $bytes = $struct->size;
-
-Returns the size of the struct in bytes.
-
-=cut
-
-sub size { shift->{size} }
-
-=head2 align
-
- my $bytes = $struct->align;
-
-Returns the structure alignment in bytes.
-
-=cut
-
-sub align { shift->{align} }
-
 =head2 create
-
- my $instance = $struct->create(%initalizers);
-
-Creates a new instance of the struct.
 
 =cut
 
