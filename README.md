@@ -1,60 +1,6 @@
-# FFI::Struct [![Build Status](https://secure.travis-ci.org/Perl5-FFI/FFI-Struct.png)](http://travis-ci.org/Perl5-FFI/FFI-Struct) ![windows](https://github.com/Perl5-FFI/FFI-Struct/workflows/windows/badge.svg) ![macos](https://github.com/Perl5-FFI/FFI-Struct/workflows/macos/badge.svg)
+# FFI::C [![Build Status](https://secure.travis-ci.org/Perl5-FFI/FFI-C.png)](http://travis-ci.org/Perl5-FFI/FFI-C) ![windows](https://github.com/Perl5-FFI/FFI-C/workflows/windows/badge.svg) ![macos](https://github.com/Perl5-FFI/FFI-C/workflows/macos/badge.svg)
 
-Structured data types for FFI
-
-# CONSTRUCTOR
-
-## new
-
-```perl
-my $struct = FFI::Struct->new(%options);
-```
-
-- name
-
-    The name of the struct.
-
-# METHODS
-
-## name
-
-```perl
-my $name = $struct->name;
-```
-
-Returns the name of the struct.
-
-## ffi
-
-```perl
-my $ffi = $struct->ffi;
-```
-
-Returns the [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) instance for this struct.
-
-## size
-
-```perl
-my $bytes = $struct->size;
-```
-
-Returns the size of the struct in bytes.
-
-## align
-
-```perl
-my $bytes = $struct->align;
-```
-
-Returns the structure alignment in bytes.
-
-## create
-
-```perl
-my $instance = $struct->create(%initalizers);
-```
-
-Creates a new instance of the struct.
+C data types for FFI
 
 # AUTHOR
 

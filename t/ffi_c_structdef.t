@@ -2,7 +2,7 @@ use Test2::V0 -no_srand => 1;
 use FFI::Platypus;
 use FFI::Platypus::Memory qw( malloc );
 use FFI::Platypus::Record;
-use FFI::Struct;
+use FFI::C::StructDef;
 
 {
   my $count = 1;
@@ -23,9 +23,9 @@ use FFI::Struct;
 }
 
 is(
-  FFI::Struct->new,
+  FFI::C::StructDef->new,
   object {
-    call [ isa => 'FFI::Struct' ] => T();
+    call [ isa => 'FFI::C::StructDef' ] => T();
     call name => U();
     call ffi => object {
       call [ isa => 'FFI::Platypus' ] => T();
@@ -33,8 +33,8 @@ is(
     call size => 0;
     call align => match qr/^[0-9]+$/;
     call create => object {
-      call [ isa => 'FFI::Struct::Instance' ] => T();
-      call [ isa => 'FFI::Struct::Instance' ] => T();
+      call [ isa => 'FFI::C::Struct' ] => T();
+      call [ isa => 'FFI::C::Struct' ] => T();
       call sub { my $self = shift; dies { $self->foo } } => match qr/No such member/;
     };
   },
@@ -42,9 +42,9 @@ is(
 );
 
 is(
-  FFI::Struct->new( name => 'foo_t' ),
+  FFI::C::StructDef->new( name => 'foo_t' ),
   object {
-    call [ isa => 'FFI::Struct' ] => T();
+    call [ isa => 'FFI::C::StructDef' ] => T();
     call name => 'foo_t';
     call ffi => object {
       call [ isa => 'FFI::Platypus' ] => T();
@@ -52,8 +52,8 @@ is(
     call size => 0;
     call align => match qr/^[0-9]+$/;
     call create => object {
-      call [ isa => 'FFI::Struct::Instance' ] => T();
-      call [ isa => 'FFI::Struct::Instance' ] => T();
+      call [ isa => 'FFI::C::Struct' ] => T();
+      call [ isa => 'FFI::C::Struct' ] => T();
       call sub { my $self = shift; dies { $self->foo } } => match qr/No such member/;
     };
   },
@@ -61,9 +61,9 @@ is(
 );
 
 is(
-  FFI::Struct->new( FFI::Platypus->new( api => 1 ), name => 'foo_t' ),
+  FFI::C::StructDef->new( FFI::Platypus->new( api => 1 ), name => 'foo_t' ),
   object {
-    call [ isa => 'FFI::Struct' ] => T();
+    call [ isa => 'FFI::C::StructDef' ] => T();
     call name => 'foo_t';
     call ffi => object {
       call [ isa => 'FFI::Platypus' ] => T();
@@ -71,8 +71,8 @@ is(
     call size => 0;
     call align => match qr/^[0-9]+$/;
     call create => object {
-      call [ isa => 'FFI::Struct::Instance' ] => T();
-      call [ isa => 'FFI::Struct::Instance' ] => T();
+      call [ isa => 'FFI::C::Struct' ] => T();
+      call [ isa => 'FFI::C::Struct' ] => T();
       call sub { my $self = shift; dies { $self->foo } } => match qr/No such member/;
     };
   },
@@ -82,16 +82,16 @@ is(
 my $ptr = malloc(10);
 
 is(
-  FFI::Struct->new( members => [
+  FFI::C::StructDef->new( members => [
     foo => 'uint8',
     bar => 'uint32',
     baz => 'sint64',
     roger => 'opaque',
   ]),
   object {
-    call [ isa => 'FFI::Struct' ] => T();
+    call [ isa => 'FFI::C::StructDef' ] => T();
     call create => object {
-      call [ isa => 'FFI::Struct::Instance' ] => T();
+      call [ isa => 'FFI::C::Struct' ] => T();
       call sub { shift->foo         } => 0;
       call sub { shift->bar         } => 0;
       call sub { shift->baz         } => 0;
@@ -118,14 +118,14 @@ is(
 );
 
 is(
-  FFI::Struct->new( members => [
+  FFI::C::StructDef->new( members => [
     foo => 'uint8',
-    bar => FFI::Struct->new( members => [
+    bar => FFI::C::StructDef->new( members => [
       baz => 'sint32',
     ]),
   ]),
   object {
-    call [ isa => 'FFI::Struct' ] => T();
+    call [ isa => 'FFI::C::StructDef' ] => T();
     call create => object {
       call sub { shift->foo             } => 0;
       call sub { shift->bar->baz        } => 0;

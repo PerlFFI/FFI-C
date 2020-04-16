@@ -1,4 +1,4 @@
-package FFI::Struct;
+package FFI::C::StructDef;
 
 use strict;
 use warnings;
@@ -17,7 +17,7 @@ use constant _is_union => 0;
 
 =head2 new
 
- my $struct = FFI::Struct->new(%options);
+ my $struct = FFI::C::StructDef->new(%options);
 
 =over 4
 
@@ -74,7 +74,7 @@ sub new
 
       if(is_blessed_ref $spec)
       {
-        if($spec->isa('FFI::Struct'))
+        if($spec->isa('FFI::C::StructDef'))
         {
           $member{nest}  = $spec;
           $member{size}  = $spec->size;
@@ -183,7 +183,8 @@ sub create
       ->call($ptr, 0, $self->size);
   }
 
-  my $class = ref($self) . "::Instance";
+  my $class = ref($self);
+  $class =~ s/Def$//;
 
   bless {
     ptr    => $ptr,
@@ -192,7 +193,7 @@ sub create
   }, $class;
 }
 
-package FFI::Struct::Instance;
+package FFI::C::Struct;
 
 use FFI::Platypus::Memory ();
 use constant memcpy => FFI::Platypus->new( lib => [undef] )->find_symbol( 'memcpy' );
