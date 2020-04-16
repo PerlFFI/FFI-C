@@ -16,7 +16,7 @@ sub AUTOLOAD
   if(my $member = $self->{def}->{members}->{$name})
   {
     my $ptr = $self->{ptr} + $member->{offset};
-    return $member->{nest}->create([$ptr,$self]) if $member->{nest};
+    return $member->{nest}->create([$ptr,$self->{owner} || $self]) if $member->{nest};
     my $ffi = $self->{def}->ffi;
     if(@_)
     {
