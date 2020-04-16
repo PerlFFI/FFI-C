@@ -5,7 +5,7 @@ use warnings;
 use 5.008001;
 use Ref::Util qw( is_blessed_ref );
 use FFI::Platypus 1.00;
-use FFI::Platypus::Memory qw( malloc );
+use FFI::Platypus::Memory qw( malloc memset );
 use Carp ();
 
 # ABSTRACT: Structured data types for FFI
@@ -48,9 +48,8 @@ sub new
   my $alignment = 0;
   my $anon      = 0;
 
-  if(defined $args{members})
+  if(my @members = @{ delete $args{members} || [] })
   {
-    my @members = @{ $args{members} };
     Carp::croak("Odd number of arguments in member spec") if scalar(@members) % 2;
     while(@members)
     {
@@ -72,6 +71,7 @@ sub new
         Carp::croak("Illegal member name");
       }
 
+      $member{spec}   = $spec;
       $member{size}   = $ffi->sizeof($spec);
       $member{align}  = $ffi->alignof($spec);
       $self->{align} = $member{align} if $member{align} > $self->{align};
@@ -85,6 +85,10 @@ sub new
   }
 
   $self->{size} = $offset;
+
+  # TODO: this is needed if malloc(0) returns undef.
+  # we could special case for platforms where malloc(0)
+  # returns a constant pointer that can be free()'d
   $self->{size} = 1 if $self->{size} == 0;
 
   Carp::carp("Unknown argument: $_") for sort keys %args;
@@ -158,19 +162,28 @@ sub create
 package FFI::Struct::Instance;
 
 use FFI::Platypus::Memory ();
+use constant memcpy => FFI::Platypus->new( lib => [undef] )->find_symbol( 'memcpy' );
 
 sub AUTOLOAD
 {
   our $AUTOLOAD;
-  my($self, $value) = @_;
-  my $member = $AUTOLOAD;
-  $member =~ s/^.*:://;
-  if($self->{def}->{$member})
+  my $self = shift;
+  my $name = $AUTOLOAD;
+  $name=~ s/^.*:://;
+  if(my $member = $self->{def}->{members}->{$name})
   {
+    my $ffi = $self->{def}->ffi;
+    my $ptr = $self->{ptr} + $member->{offset};
+    if($_[0])
+    {
+      $ffi->function( memcpy() => [ 'opaque', $member->{spec} . "*", 'size_t' ] => 'opaque' )
+          ->call($ptr, \$_[0], $member->{size});
+    }
+    return ${ $ffi->cast( 'opaque' => $member->{spec} . "*", $ptr ) };
   }
   else
   {
-    Carp::croak("No such member: $member");
+    Carp::croak("No such member: $name");
   }
 }
 
