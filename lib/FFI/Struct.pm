@@ -177,7 +177,7 @@ sub AUTOLOAD
   {
     my $ffi = $self->{def}->ffi;
     my $ptr = $self->{ptr} + $member->{offset};
-    if($_[0])
+    if(@_)
     {
       $ffi->function( memcpy() => [ 'opaque', $member->{spec} . "*", 'size_t' ] => 'opaque' )
           ->call($ptr, \$_[0], $member->{size});
