@@ -56,6 +56,26 @@ is(
   'named, empty struct, explicit Platypus',
 );
 
+is(
+  FFI::Struct->new( members => [
+    foo => 'uint8',
+    bar => 'uint32',
+    baz => 'sint64',
+  ]),
+  object {
+    call [ isa => 'FFI::Struct' ] => T();
+    call create => object {
+      call sub { shift->foo(22)   } => 22;
+      call sub { shift->bar(1900) } => 1900;
+      call sub { shift->baz(-500) } => -500;
+      call sub { shift->foo       } => 22;
+      call sub { shift->bar       } => 1900;
+      call sub { shift->baz       } => -500;
+    };
+  },
+  'with members',
+);
+
 done_testing;
 
 
