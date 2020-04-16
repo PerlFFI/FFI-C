@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use 5.008001;
 use Ref::Util qw( is_blessed_ref );
-use FFI::Platypus 1.00;
+use FFI::Platypus 1.11;
 use FFI::Platypus::Memory qw( malloc );
 use Carp ();
 use constant memset => FFI::Platypus->new( lib => [undef] )->find_symbol( 'memset' );
@@ -34,8 +34,7 @@ sub new
   my $ffi = is_blessed_ref($_[0]) && $_[0]->isa('FFI::Platypus') ? shift : FFI::Platypus->new( api => 1 );
   my %args = @_;
 
-  # TODO: add ->api method to Platypus
-  Carp::croak("Only works with FFI::Platypus api level 1 or better") unless $ffi->{api} >= 1;
+  Carp::croak("Only works with FFI::Platypus api level 1 or better") unless $ffi->api >= 1;
 
   my $self = bless {
     ffi     => $ffi,
