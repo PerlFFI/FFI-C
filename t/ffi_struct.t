@@ -9,11 +9,12 @@ use FFI::Struct;
   sub record
   {
     my $struct = shift;
-    eval qq{
+    my $perl = qq{
       package Rec$count;
       use FFI::Platypus::Record;
       record_layout_1(\@_);
     };
+    eval $perl;  ## no critic (BuiltinFunctions::ProhibitStringyEval)
     die $@ if $@;
     my $rec = FFI::Platypus->new( api => 1 )->cast( 'opaque' => "record(Rec$count)*", $struct->{ptr} );
     $count++;
