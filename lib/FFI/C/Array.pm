@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use FFI::C::FFI ();
 use overload
-  '@{}' => sub { my @a; tie @a, 'FFI::C::ArrayTie', shift; \@a },
+  '@{}' => \&tie,
   bool => sub { 1 },
   fallback => 1;
 
@@ -16,6 +16,8 @@ use overload
 =head2 get
 
 =head2 count
+
+=head2 tie
 
 =cut
 
@@ -30,6 +32,13 @@ sub get
 }
 
 sub count { shift->{count} }
+
+sub tie
+{
+  my @a;
+  CORE::tie @a, 'FFI::C::ArrayTie', shift;
+  \@a;
+}
 
 sub DESTROY
 {
