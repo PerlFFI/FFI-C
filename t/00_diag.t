@@ -13,6 +13,7 @@ $modules{$_} = $_ for qw(
   ExtUtils::MakeMaker
   FFI::Platypus
   FFI::Platypus::Memory
+  FFI::Platypus::Record
   Ref::Util
   Test2::V0
 );
