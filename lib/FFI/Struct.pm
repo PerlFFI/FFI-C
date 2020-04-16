@@ -3,7 +3,7 @@ package FFI::Struct;
 use strict;
 use warnings;
 use 5.008001;
-use Ref::Util qw( is_blessed_ref );
+use Ref::Util qw( is_blessed_ref is_plain_arrayref );
 use FFI::Platypus 1.11;
 use FFI::Platypus::Memory qw( malloc );
 use Carp ();
@@ -71,9 +71,21 @@ sub new
         Carp::croak("Illegal member name");
       }
 
-      $member{spec}   = $spec;
-      $member{size}   = $ffi->sizeof($spec);
-      $member{align}  = $ffi->alignof($spec);
+      if(is_blessed_ref $spec)
+      {
+        if($spec->isa('FFI::Struct'))
+        {
+          $member{nest}  = $spec;
+          $member{size}  = $spec->size;
+          $member{align} = $spec->align;
+        }
+      }
+      else
+      {
+        $member{spec}   = $spec;
+        $member{size}   = $ffi->sizeof($spec);
+        $member{align}  = $ffi->alignof($spec);
+      }
       $self->{align} = $member{align} if $member{align} > $self->{align};
 
       $offset++ while $offset % $member{align};
@@ -148,16 +160,25 @@ Creates a new instance of the struct.
 
 sub create
 {
-  my($self) = @_;
+  my $self = shift;;
+  my $ptr;
+  my $owner;
 
-  my $ptr = malloc($self->size);
-  $self->ffi->function( memset() => ['opaque','int','size_t'] => 'opaque' )
-    ->call($ptr, 0, $self->size);
+  if(@_ == 1 && is_plain_arrayref $_[0])
+  {
+    ($ptr, $owner) = @{ shift() };
+  }
+  else
+  {
+    $ptr = malloc($self->size);
+    $self->ffi->function( memset() => ['opaque','int','size_t'] => 'opaque' )
+      ->call($ptr, 0, $self->size);
+  }
 
   bless {
     ptr    => $ptr,
     def    => $self,
-    owner  => undef,
+    owner  => $owner,
   }, 'FFI::Struct::Instance';
 }
 
@@ -174,8 +195,9 @@ sub AUTOLOAD
   $name=~ s/^.*:://;
   if(my $member = $self->{def}->{members}->{$name})
   {
-    my $ffi = $self->{def}->ffi;
     my $ptr = $self->{ptr} + $member->{offset};
+    return $member->{nest}->create([$ptr,$self]) if $member->{nest};
+    my $ffi = $self->{def}->ffi;
     if(@_)
     {
       $ffi->function( memcpy() => [ 'opaque', $member->{spec} . "*", 'size_t' ] => 'opaque' )
