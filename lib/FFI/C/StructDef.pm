@@ -3,12 +3,12 @@ package FFI::C::StructDef;
 use strict;
 use warnings;
 use 5.008001;
+use FFI::C::FFI qw( malloc memset );
 use FFI::C::Struct;
 use FFI::Platypus 1.11;
 use Ref::Util qw( is_blessed_ref is_plain_arrayref );
 use FFI::Platypus::Memory qw( malloc );
 use Carp ();
-use constant memset => FFI::Platypus->new( lib => [undef] )->find_symbol( 'memset' );
 use constant _is_union => 0;
 
 # ABSTRACT: Structured data definition for FFI
@@ -180,8 +180,7 @@ sub create
     # we could special case for platforms where malloc(0)
     # returns a constant pointer that can be free()'d
     $ptr = malloc($self->size ? $self->size : 1);
-    $self->ffi->function( memset() => ['opaque','int','size_t'] => 'opaque' )
-      ->call($ptr, 0, $self->size);
+    memset($ptr, 0, $self->size);
   }
 
   my $class = ref($self);

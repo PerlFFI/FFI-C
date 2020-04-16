@@ -2,8 +2,7 @@ package FFI::C::Struct;
 
 use strict;
 use warnings;
-use FFI::Platypus::Memory ();
-use constant memcpy => FFI::Platypus->new( lib => [undef] )->find_symbol( 'memcpy' );
+use FFI::C::FFI ();
 
 # ABSTRACT: Structured data instance for FFI
 # VERSION
@@ -21,7 +20,7 @@ sub AUTOLOAD
     my $ffi = $self->{def}->ffi;
     if(@_)
     {
-      $ffi->function( memcpy() => [ 'opaque', $member->{spec} . "*", 'size_t' ] => 'opaque' )
+      $ffi->function( FFI::C::FFI::memcpy_addr() => [ 'opaque', $member->{spec} . "*", 'size_t' ] => 'opaque' )
           ->call($ptr, \$_[0], $member->{size});
     }
     return ${ $ffi->cast( 'opaque' => $member->{spec} . "*", $ptr ) };
@@ -37,7 +36,7 @@ sub DESTROY
   my($self) = @_;
   if($self->{ptr} && !$self->{owner})
   {
-    FFI::Platypus::Memory::free(delete $self->{ptr});
+    FFI::C::FFI::free(delete $self->{ptr});
   }
 }
 
