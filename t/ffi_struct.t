@@ -34,6 +34,7 @@ is(
     call align => match qr/^[0-9]+$/;
     call create => object {
       call [ isa => 'FFI::Struct::Instance' ] => T();
+      call [ isa => 'FFI::Struct::Instance' ] => T();
       call sub { my $self = shift; dies { $self->foo } } => match qr/No such member/;
     };
   },
@@ -51,6 +52,7 @@ is(
     call size => 1;
     call align => match qr/^[0-9]+$/;
     call create => object {
+      call [ isa => 'FFI::Struct::Instance' ] => T();
       call [ isa => 'FFI::Struct::Instance' ] => T();
       call sub { my $self = shift; dies { $self->foo } } => match qr/No such member/;
     };
@@ -70,6 +72,7 @@ is(
     call align => match qr/^[0-9]+$/;
     call create => object {
       call [ isa => 'FFI::Struct::Instance' ] => T();
+      call [ isa => 'FFI::Struct::Instance' ] => T();
       call sub { my $self = shift; dies { $self->foo } } => match qr/No such member/;
     };
   },
@@ -88,6 +91,7 @@ is(
   object {
     call [ isa => 'FFI::Struct' ] => T();
     call create => object {
+      call [ isa => 'FFI::Struct::Instance' ] => T();
       call sub { shift->foo         } => 0;
       call sub { shift->bar         } => 0;
       call sub { shift->baz         } => 0;
@@ -113,6 +117,21 @@ is(
   'with members',
 );
 
+is(
+  FFI::Struct->new( members => [
+    foo => 'uint8',
+    bar => FFI::Struct->new( members => [
+      baz => 'uint32',
+    ]),
+  ]),
+  object {
+    call [ isa => 'FFI::Struct' ] => T();
+    call create => object {
+      call sub { shift->foo         } => 0;
+      call sub { shift->bar->baz    } => 0;
+    },
+  },
+  'nested'
+);
+
 done_testing;
-
-
