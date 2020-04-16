@@ -3,11 +3,9 @@ package FFI::C::StructDef;
 use strict;
 use warnings;
 use 5.008001;
-use FFI::C::FFI qw( malloc memset );
 use FFI::C::Struct;
 use FFI::Platypus 1.11;
-use Ref::Util qw( is_blessed_ref is_plain_arrayref );
-use FFI::Platypus::Memory qw( malloc );
+use Ref::Util qw( is_blessed_ref );
 use Carp ();
 use constant _is_union => 0;
 use base qw( FFI::C::Def );
@@ -23,19 +21,9 @@ use base qw( FFI::C::Def );
 
 sub new
 {
-  my $class = shift;
-  my $ffi = is_blessed_ref($_[0]) && $_[0]->isa('FFI::Platypus') ? shift : FFI::Platypus->new( api => 1 );
-  my %args = @_;
+  my $self = shift->SUPER::new(@_);
 
-  Carp::croak("Only works with FFI::Platypus api level 1 or better") unless $ffi->api >= 1;
-
-  my $self = bless {
-    ffi     => $ffi,
-    name    => delete $args{name},
-    members => {},
-    align   => 0,
-    size    => 0,
-  }, $class;
+  my %args = %{ delete $self->{args} };
 
   my $offset    = 0;
   my $alignment = 0;
@@ -76,8 +64,8 @@ sub new
       else
       {
         $member{spec}   = $spec;
-        $member{size}   = $ffi->sizeof($spec);
-        $member{align}  = $ffi->alignof($spec);
+        $member{size}   = $self->ffi->sizeof($spec);
+        $member{align}  = $self->ffi->alignof($spec);
       }
       $self->{align} = $member{align} if $member{align} > $self->{align};
 
@@ -102,42 +90,6 @@ sub new
   Carp::carp("Unknown argument: $_") for sort keys %args;
 
   $self;
-}
-
-=head1 METHODS
-
-=head2 create
-
-=cut
-
-sub create
-{
-  my $self = shift;;
-  my $ptr;
-  my $owner;
-
-  if(@_ == 1 && is_plain_arrayref $_[0])
-  {
-    ($ptr, $owner) = @{ shift() };
-  }
-  else
-  {
-    # TODO: we use 1 byte for size 0
-    # this is needed if malloc(0) returns undef.
-    # we could special case for platforms where malloc(0)
-    # returns a constant pointer that can be free()'d
-    $ptr = malloc($self->size ? $self->size : 1);
-    memset($ptr, 0, $self->size);
-  }
-
-  my $class = ref($self);
-  $class =~ s/Def$//;
-
-  bless {
-    ptr    => $ptr,
-    def    => $self,
-    owner  => $owner,
-  }, $class;
 }
 
 1;
