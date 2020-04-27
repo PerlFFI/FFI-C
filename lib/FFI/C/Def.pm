@@ -24,7 +24,7 @@ sub new
   Carp::croak("Only works with FFI::Platypus api level 1 or better") unless $ffi->api >= 1;
   Carp::croak("FFI::C::Def is an abstract class") if $class eq 'FFI::C::Def';
 
-  bless {
+  my $self = bless {
     ffi     => $ffi,
     name    => delete $args{name},
     members => {},
@@ -32,6 +32,19 @@ sub new
     size    => 0,
     args    => \%args,
   }, $class;
+
+  if($self->name)
+  {
+    my $cdef = ref($self);
+    $cdef =~ s/Def$//;
+    $ffi->load_custom_type('::CDef' => $self->name,
+      name => $self->name,
+      def  => $self,
+      cdef => $cdef,
+    );
+  }
+
+  $self;
 }
 
 =head1 METHODS
@@ -79,10 +92,71 @@ sub create
   $class =~ s/Def$//;
 
   bless {
-    ptr    => $ptr,
-    def    => $self,
-    owner  => $owner,
+    ptr   => $ptr,
+    def   => $self,
+    owner => $owner,
   }, $class;
+}
+
+package FFI::Platypus::Type::CDef;
+
+use Ref::Util qw( is_blessed_ref );
+
+push @FFI::Platypus::CARP_NOT, __PACKAGE__;
+
+sub ffi_custom_type_api_1
+{
+  my(undef, undef, %args) = @_;
+
+  my $perl_to_native;
+  my $native_to_perl;
+
+  my $name  = $args{name};
+  my $class = $args{class};
+  my $def   = $args{def}  || Carp::croak("no def defined");
+  my $cdef  = $args{cdef} || Carp::croak("no cdef defined");
+
+  if($class)
+  {
+    $perl_to_native = sub {
+      Carp::croak("argument is not a $class")
+        unless is_blessed_ref $_[0]
+        && $_[0]->isa($class);
+      my $ptr = $_[0]->{ptr};
+      Carp::croak("pointer for $name went away")
+        unless defined $ptr;
+    };
+    $native_to_perl = sub {
+      defined $_[0]
+        ? bless { ptr => $_[0], owner => 1 }, $class
+        : undef;
+    };
+  }
+
+  elsif($name)
+  {
+    $perl_to_native = sub {
+      Carp::croak("argument is not a $name")
+        unless is_blessed_ref $_[0]
+        && ref($_[0]) eq $cdef
+        && $_[0]->{def}->{name} eq $name;
+      my $ptr = $_[0]->{ptr};
+      Carp::croak("pointer for $name went away")
+        unless defined $ptr;
+      $ptr;
+    };
+    $native_to_perl = sub {
+      defined $_[0]
+        ? bless { ptr => $_[0], def => $def, owner => 1 }, $cdef
+        : undef;
+    };
+  }
+
+  return {
+    native_type    => 'opaque',
+    perl_to_native => $perl_to_native,
+    native_to_perl => $native_to_perl,
+  }
 }
 
 1;
