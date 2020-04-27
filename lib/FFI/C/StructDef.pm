@@ -82,7 +82,9 @@ sub new
         $member{spec}   = $spec;
         $member{rec}    = 1;
         $member{size}   = $self->ffi->sizeof("$spec*");
-        $member{align}  = $self->ffi->alignof("$spec*");
+        local $@;
+        $member{align}  = eval { $self->ffi->alignof("$spec*") };
+        Carp::croak("FFI-C doesn't support $spec for struct or union members") if $@;
       }
       else
       {
