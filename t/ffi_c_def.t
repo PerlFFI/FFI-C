@@ -1,8 +1,10 @@
 use Test2::V0 -no_srand => 1;
-use FFI::C;
+use FFI::C::Def;
 
-ok 1;
-
-diag 'todo';
+is(
+  dies { FFI::C::Def->new },
+  match qr/FFI::C::Def is an abstract class/,
+  'cannot create instance'
+);
 
 done_testing;
