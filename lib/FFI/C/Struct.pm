@@ -21,7 +21,10 @@ sub AUTOLOAD
     if(@_)
     {
       my $src = \$_[0];
-      $src = \($_[0] . ("\0" x ($member->{size} - do { use bytes; length $_[0] }))) if $member->{rec} && $member->{size} != do { use bytes; length $_[0] };
+
+      # For fixed strings, pad short strings with NULLs
+      $src = \($_[0] . ("\0" x ($member->{size} - do { use bytes; length $_[0] }))) if $member->{rec} && $member->{size} > do { use bytes; length $_[0] };
+
       $ffi->function( FFI::C::FFI::memcpy_addr() => [ 'opaque', $member->{spec} . "*", 'size_t' ] => 'opaque' )
           ->call($ptr, $src, $member->{size});
     }
