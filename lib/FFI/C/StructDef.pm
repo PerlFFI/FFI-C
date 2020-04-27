@@ -22,7 +22,9 @@ use base qw( FFI::C::Def );
 sub _is_kind
 {
   my($self, $name, $want) = @_;
-  my $kind = eval { $self->ffi->_kindof($name) };
+  my $method = $self->ffi->can('kindof') || $self->ffi->can('_kindof');
+  die "The platypus you are using doesn't support kindof method" unless $method;
+  my $kind = eval { $self->ffi->$method($name) };
   return undef unless defined $kind;
   return $kind eq $want;
 }
