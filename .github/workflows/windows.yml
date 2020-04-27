@@ -46,6 +46,7 @@ jobs:
       - name: Install Static Dependencies
         run: |
           cpanm -n Dist::Zilla
+          perl maint/gh-windows.pl
           dzil authordeps --missing | cpanm -n
           dzil listdeps --missing   | cpanm -n
       - name: Install Dynamic Dependencies
