@@ -138,4 +138,19 @@ is(
   'nested'
 );
 
+is(
+  FFI::C::StructDef->new( members => [
+    foo => 'string(10)',
+  ]),
+  object {
+    call [ isa => 'FFI::C::StructDef' ] => T();
+    call create => object {
+      call sub { shift->foo          } => "\0\0\0\0\0\0\0\0\0\0";
+      call sub { shift->foo("hello") } => "hello\0\0\0\0\0";
+      call sub { shift->foo          } => "hello\0\0\0\0\0";
+    },
+  },
+  'fixed string',
+);
+
 done_testing;

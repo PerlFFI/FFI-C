@@ -20,10 +20,15 @@ sub AUTOLOAD
     my $ffi = $self->{def}->ffi;
     if(@_)
     {
+      my $src = \$_[0];
+      $src = \($_[0] . ("\0" x ($member->{size} - do { use bytes; length $_[0] }))) if $member->{rec} && $member->{size} != do { use bytes; length $_[0] };
       $ffi->function( FFI::C::FFI::memcpy_addr() => [ 'opaque', $member->{spec} . "*", 'size_t' ] => 'opaque' )
-          ->call($ptr, \$_[0], $member->{size});
+          ->call($ptr, $src, $member->{size});
     }
-    return ${ $ffi->cast( 'opaque' => $member->{spec} . "*", $ptr ) };
+
+    my $value = $ffi->cast( 'opaque' => $member->{spec} . "*", $ptr );
+    $value = $$value unless $member->{rec};
+    return $value;
   }
   else
   {

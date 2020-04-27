@@ -19,6 +19,14 @@ use base qw( FFI::C::Def );
 
 =cut
 
+sub _is_kind
+{
+  my($self, $name, $want) = @_;
+  my $kind = eval { $self->ffi->_kindof($name) };
+  return undef unless defined $kind;
+  return $kind eq $want;
+}
+
 sub new
 {
   my $self = shift->SUPER::new(@_);
@@ -61,12 +69,24 @@ sub new
           $member{align} = $spec->align;
         }
       }
-      else
+      elsif($self->_is_kind($spec, 'scalar'))
       {
         $member{spec}   = $spec;
         $member{size}   = $self->ffi->sizeof($spec);
         $member{align}  = $self->ffi->alignof($spec);
       }
+      elsif($self->_is_kind("$spec*", 'record'))
+      {
+        $member{spec}   = $spec;
+        $member{rec}    = 1;
+        $member{size}   = $self->ffi->sizeof("$spec*");
+        $member{align}  = $self->ffi->alignof("$spec*");
+      }
+      else
+      {
+        Carp::croak("FFI-C doesn't support $spec for struct or union members");
+      }
+
       $self->{align} = $member{align} if $member{align} > $self->{align};
 
       if($self->_is_union)
