@@ -153,4 +153,31 @@ is(
   'fixed string',
 );
 
+=pod
+
+# todo:
+is(
+  do {
+    my $ffi = FFI::Platypus->new( api => 1 );
+    { package RecX1;
+      use FFI::Platypus::Record;
+      record_layout_1($ffi, 'string(10)' => 'bar');
+    }
+    FFI::C::StructDef->new( members => [
+      foo => 'record(RecX1)',
+    ]);
+  },
+  object {
+    call [ isa => 'FFI::C::StructDef' ] => T();
+    call create => object {
+      call sub { shift->foo->bar                       } => "\0\0\0\0\0\0\0\0\0\0";
+      call sub { shift->foo(Rec1->new(bar => "hello")) } => "hello\0\0\0\0\0";
+      call sub { shift->foo->bar                       } => "hello\0\0\0\0\0";
+    },
+  },
+  'fixed string',
+);
+
+=cut
+
 done_testing;
