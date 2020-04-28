@@ -117,64 +117,19 @@ sub new
 
   if($self->class)
   {
-
-    # first run through all the members, and make sure that we
-    # can generate a class based on the def.  That means that:
-    #  1. there is no constructor or destructor defined yet.
-    #  2. none of the member accessors already exist
-    #  3. Any nested cdefs have Perl classes.
-
-    foreach my $method (qw( new DESTROY ))
-    {
-      my $accessor = join '::', $self->class, $method;
-      Carp::croak("$accessor already defined") if $self->class->can($method);
-    }
+    # not handled by the superclass:
+    #  3. Any nested cdefs must have Perl classes.
 
     foreach my $name (keys %{ $self->{members} })
     {
       next if $name =~ /^:/;
-      my $accessor = $self->class . '::' . $name;
-      Carp::croak("$accessor already exists")
-        if $self->class->can($name);
       my $member = $self->{members}->{$name};
+      my $accessor = $self->class . '::' . $name;
       Carp::croak("Missing Perl class for $accessor")
         if $member->{nest} && !$member->{nest}->{class};
     }
 
-    require FFI::Platypus::Memory;
-
-    {
-      my $size = $self->size;
-      $size = 1 unless $size > 0;
-
-      Sub::Install::install_sub({
-        code => sub {
-          my $class = shift;
-          my($ptr, $owner);
-          if(@_ == 1 && is_plain_arrayref $_[0])
-          {
-            ($ptr, $owner) = @{ shift() };
-          }
-          else
-          {
-            $ptr = FFI::Platypus::Memory::malloc($size);
-            FFI::Platypus::Memory::memset($ptr, 0, $size);
-          }
-          bless {
-            ptr => $ptr,
-            owner => $owner,
-          }, $class;
-        },
-        into => $self->class,
-        as   => 'new',
-      });
-    }
-
-    Sub::Install::install_sub({
-      code => \&_common_destroy,
-      into => $self->class,
-      as   => 'DESTROY',
-    });
+    $self->_generate_class(keys %{ $self->{members} });
 
     {
       my $ffi = $self->ffi;

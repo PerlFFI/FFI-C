@@ -5,6 +5,7 @@ use warnings;
 use 5.008001;
 use FFI::C::FFI qw( malloc memset );
 use Ref::Util qw( is_blessed_ref is_plain_arrayref );
+use Sub::Install ();
 
 # ABSTRACT: Data definition for FFI
 # VERSION
@@ -46,6 +47,67 @@ sub new
   }
 
   $self;
+}
+
+sub _generate_class
+{
+  my($self, @accessors) = @_;
+
+  # first run through all the members, and make sure that we
+  # can generate a class based on the def.  That means that:
+  #  1. there is no constructor or destructor defined yet.
+  #  2. none of the member accessors already exist
+  #  3. Any nested cdefs have Perl classes, this will be done
+  #     in the subclass
+
+  foreach my $method (qw( new DESTROY ))
+  {
+    my $accessor = join '::', $self->class, $method;
+    Carp::croak("$accessor already defined") if $self->class->can($method);
+  }
+
+  foreach my $name (@accessors)
+  {
+    next if $name =~ /^:/;
+    my $accessor = $self->class . '::' . $name;
+    Carp::croak("$accessor already exists")
+      if $self->class->can($name);
+  }
+
+  require FFI::Platypus::Memory;
+
+  {
+    my $size = $self->size;
+    $size = 1 unless $size > 0;
+
+    Sub::Install::install_sub({
+      code => sub {
+        my $class = shift;
+        my($ptr, $owner);
+        if(@_ == 1 && is_plain_arrayref $_[0])
+        {
+          ($ptr, $owner) = @{ shift() };
+        }
+        else
+        {
+          $ptr = FFI::Platypus::Memory::malloc($size);
+          FFI::Platypus::Memory::memset($ptr, 0, $size);
+        }
+        bless {
+          ptr => $ptr,
+          owner => $owner,
+        }, $class;
+      },
+      into => $self->class,
+      as   => 'new',
+    });
+  }
+
+  Sub::Install::install_sub({
+    code => \&_common_destroy,
+    into => $self->class,
+    as   => 'DESTROY',
+  });
 }
 
 =head1 METHODS
