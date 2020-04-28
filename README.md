@@ -2,6 +2,26 @@
 
 C data types for FFI
 
+# SYNOPSIS
+
+# DESCRIPTION
+
+This distribution provides tools for building classes to interface for common C
+data types.  Arrays, `struct`, `union` and nested types based on those are
+supported.
+
+# SEE ALSO
+
+- [FFI::C](https://metacpan.org/pod/FFI::C)
+- [FFI::C::Array](https://metacpan.org/pod/FFI::C::Array)
+- [FFI::C::ArrayDef](https://metacpan.org/pod/FFI::C::ArrayDef)
+- [FFI::C::Def](https://metacpan.org/pod/FFI::C::Def)
+- [FFI::C::Struct](https://metacpan.org/pod/FFI::C::Struct)
+- [FFI::C::StructDef](https://metacpan.org/pod/FFI::C::StructDef)
+- [FFI::C::Union](https://metacpan.org/pod/FFI::C::Union)
+- [FFI::C::Union](https://metacpan.org/pod/FFI::C::Union)
+- [FFI::Platypus::Record](https://metacpan.org/pod/FFI::Platypus::Record)
+
 # AUTHOR
 
 Graham Ollis <plicease@cpan.org>
