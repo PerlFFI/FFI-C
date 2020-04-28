@@ -13,7 +13,8 @@ my @dirs = qw( examples examples/synopsis );
 
 is(
   do {
-    my($out, $lib) = capture_merged {
+    my $lib;
+    my($out) = capture_merged {
       require FFI::Build;
       my $build = FFI::Build->new(
         'main',
@@ -21,7 +22,7 @@ is(
         verbose => 2,
       );
       $build->source(map { bsd_glob "$_/*.c" } @dirs);
-      $build->build;
+      $lib = eval { $build->build };
     };
     note $out if $out ne '';
 
