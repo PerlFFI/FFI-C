@@ -5,8 +5,18 @@ use warnings;
 use FFI::Platypus 1.11;
 use base qw( Exporter );
 
-# ABSTRACT: Private class for Wasm::Wasmtime
+# ABSTRACT: Private module for FFI::C
 # VERSION
+
+=head1 SYNOPSIS
+
+ perldoc FFI::C
+
+=head1 DESCRIPTION
+
+This module is private for L<FFI::C>
+
+=cut
 
 our @EXPORT_OK = qw( malloc free memset memcpy_addr );
 
