@@ -15,7 +15,35 @@ use base qw( FFI::C::Def );
 # ABSTRACT: Structured data definition for FFI
 # VERSION
 
+=head1 SYNOPSIS
+
+In your C code:
+
+# EXAMPLE: examples/synopsis/structdef.c
+
+In your Perl code:
+
+# EXAMPLE: examples/synopsis/structdef.pl
+
+=head1 DESCRIPTION
+
+This class creates a def for a C C<struct>.
+
 =head1 CONSTRUCTOR
+
+ my $def = FFI::C::StructDef->new(%opts);
+ my $def = FFI::C::StructDef->new($ffi, %opts);
+
+For standard def options, see L<FFI::C::Def>.
+
+=over 4
+
+=item members
+
+This should be an array reference containing name, type pairs,
+in the order that they will be stored in the struct.
+
+=back
 
 =head2 new
 
@@ -192,5 +220,14 @@ sub new
 
   $self;
 }
+
+=head2 create
+
+ my $instance = $def->create;
+ my $instance = $def->class->new;  # if class was specified
+
+This creates an instance of the C<struct>.
+
+=cut
 
 1;

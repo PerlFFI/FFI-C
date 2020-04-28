@@ -10,11 +10,9 @@ typedef struct {
 void
 print_color(color_t *c)
 {
-  /*
   printf("[%02x %02x %02x]\n",
     c->red,
     c->green,
     c->blue
   );
-  */
 }
