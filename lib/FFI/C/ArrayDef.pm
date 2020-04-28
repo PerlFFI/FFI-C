@@ -11,9 +11,49 @@ use base qw( FFI::C::Def );
 # ABSTRACT: Array data definition for FFI
 # VERSION
 
+=head1 SYNOPSIS
+
+In your C code:
+
+# EXAMPLE: examples/synopsis/arraydef.c
+
+In your Perl code:
+
+# EXAMPLE: examples/synopsis/arraydef.pl
+
+=head1 DESCRIPTION
+
+This class creates a def for a C array of structured data.  Usually the def
+contains a L<FFI::C::StructDef> or L<FFI::C::UnionDef> and optionally a number
+of elements.
+
 =head1 CONSTRUCTOR
 
 =head2 new
+
+ my $def = FFI::C::ArrayDef->new(%opts);
+ my $def = FFI::C::ArrayDef->new($ffi, %opts);
+
+For standard def options, see L<FFI::C::Def>.
+
+=over 4
+
+=item members
+
+This should be an array reference the member type, and
+optionally the number of elements.  Examples:
+
+ my $struct = FFI::C::StructDef->new(...);
+
+ my $fixed = FFI::C::ArrayDef->new(
+   members => [ $struct, 10 ],
+ );
+
+ my $var = FFI::C::ArrayDef->new(
+   members => [ $struct ],
+ );
+
+=back
 
 =cut
 
@@ -96,6 +136,16 @@ sub new
 =head1 METHODS
 
 =head2 create
+
+ my $instance = $def->create;
+ my $instance = $def->class->new;          # if class was specified
+ my $instance = $def->create($count);
+ my $instance = $def->class->new($count);  # if class was specified
+
+This creates an instance of the array.  If C<$count> is given, this
+is used for the element count, possibly overriding what was specified 
+when the def was created.  If the def doesn't have an element count
+specified, then you MUST provide it here.  Returns a L<FFI::C::Array>.
 
 =cut
 

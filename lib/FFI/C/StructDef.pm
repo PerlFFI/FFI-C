@@ -87,7 +87,7 @@ sub new
       {
         $name .= (++$anon);
       }
-      elsif($name !~ /^[A-Za-z_][A-Za-z_0-9]+$/)
+      elsif($name !~ /^[A-Za-z_][A-Za-z_0-9]*$/)
       {
         Carp::croak("Illegal member name");
       }
@@ -226,7 +226,7 @@ sub new
  my $instance = $def->create;
  my $instance = $def->class->new;  # if class was specified
 
-This creates an instance of the C<struct>.
+This creates an instance of the C<struct>, returns a L<FFI::C::Struct>.
 
 =cut
 
