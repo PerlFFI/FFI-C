@@ -1,5 +1,5 @@
 use Test2::V0 -no_srand => 1;
-use FFI::Platypus;
+use FFI::Platypus 1.00;
 use FFI::Platypus::Memory qw( malloc );
 use FFI::Platypus::Record;
 use FFI::C::StructDef;
@@ -153,31 +153,45 @@ is(
   'fixed string',
 );
 
-=pod
+{
+  my $ffi = FFI::Platypus->new( api => 1 );
 
-# todo:
-is(
-  do {
-    my $ffi = FFI::Platypus->new( api => 1 );
-    { package RecX1;
-      use FFI::Platypus::Record;
-      record_layout_1($ffi, 'string(10)' => 'bar');
-    }
-    FFI::C::StructDef->new( members => [
-      foo => 'record(RecX1)',
-    ]);
-  },
-  object {
-    call [ isa => 'FFI::C::StructDef' ] => T();
-    call create => object {
-      call sub { shift->foo->bar                       } => "\0\0\0\0\0\0\0\0\0\0";
-      call sub { shift->foo(Rec1->new(bar => "hello")) } => "hello\0\0\0\0\0";
-      call sub { shift->foo->bar                       } => "hello\0\0\0\0\0";
+  FFI::C::StructDef->new(
+    $ffi,
+    name    => 'named_color_t',
+    class   => 'Color::Named',
+    members => [
+      name => 'string(5)',
+      value => FFI::C::StructDef->new(
+        name => 'value_color_t',
+        class => 'Color::Value',
+        members => [
+          red   => 'uint8',
+          green => 'uint8',
+          blue  => 'uint8',
+        ],
+      ),
+    ],
+  );
+
+  is(
+    Color::Named->new,
+    object {
+      call [ isa => 'Color::Named' ] => T();
+      call name => "\0\0\0\0\0";
+      call [ name => "red" ] => "red\0\0";
+      call name => "red\0\0";
+      call value => object {
+        call [ isa => 'Color::Value' ] => T();
+        call red => 0;
+        call [ red => 255] => 255;
+        call red   => 255;
+        call green => 0;
+        call blue  => 0;
+      };
     },
-  },
-  'fixed string',
-);
-
-=cut
+    'named color',
+  );
+}
 
 done_testing;
