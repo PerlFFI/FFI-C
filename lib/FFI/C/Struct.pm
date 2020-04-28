@@ -7,6 +7,30 @@ use FFI::C::FFI ();
 # ABSTRACT: Structured data instance for FFI
 # VERSION
 
+=head1 SYNOPSIS
+
+# EXAMPLE: examples/synopsis/struct.pl
+
+=head2 DESCRIPTION
+
+This class represents an instance of a C C<struct>.  This class can be created using
+C<new> on the generated class, if that was specified for the L<FFI::C::StructDef>,
+or by using the C<create> method on L<FFI::C::StructDef>.
+
+For each member defined in the L<FFI::C::StructDef> there is an accessor for the 
+L<FFI::C::Struct> instance.
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+ FFI::C::StructDef->new( class => 'User::Struct::Class', ... );
+ my $instance = User::Struct::Class->new;
+
+Creates a new instance of the C<struct>.
+
+=cut
+
 sub AUTOLOAD
 {
   our $AUTOLOAD;

@@ -11,13 +11,51 @@ use overload
 # ABSTRACT: Array instance for FFI
 # VERSION
 
+=head1 SYNOPSIS
+
+# EXAMPLE: examples/synopsis/array.pl
+
+=head2 DESCRIPTION
+
+This class represents an instance of a C an array.  This class can be created using
+C<new> on the generated class, if that was specified for the L<FFI::C::ArrayDef>,
+or by using the C<create> method on L<FFI::C::ArrayDef>.
+
+Each element of the array can be accessed using the C<get> method below, or by using
+the object as an array reference, thanks to magical Perl ties.
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+ FFI::C::ArrayDef->new( class => 'User::Array::Class', ... );
+ my $instance = User::Array::Class->new;
+ my $instance = User::Array::Class->new($count);
+
+Creates a new instance of the array.  If C<$count> is specified, that will be used
+as the element count, overriding the count defined by the def.  If the def did not
+specify a count then you MUST provide a count.
+
 =head1 METHODS
 
 =head2 get
 
+ my $element = $instance->get($index);
+ my $element = $instance->[$index];
+
+Gets the element at the given C<$index>.
+
 =head2 count
 
+ my $count = $instance->count;
+
+Returns the number of elements in the array, if known.
+
 =head2 tie
+
+ my $arrayref = $instance->tie;
+
+Returns a Perl array reference tied to the C array.
 
 =cut
 
