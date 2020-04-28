@@ -12,6 +12,12 @@ use Sub::Install ();
 
 =head1 SYNOPSIS
 
+In your C code:
+
+# EXAMPLE: examples/synopsis/structdef.c
+
+In your Perl code:
+
 # EXAMPLE: examples/synopsis/structdef.pl
 
 =head1 DESCRIPTION
@@ -27,8 +33,39 @@ L<FFI::C::StructDef>, L<FFI::C::UnionDef>, L<FFI::C::ArrayDef>.
 
 =head2 new
 
+ my $def = FFI::C::StructDef->new(%opts);
+ my $def = FFI::C::StructDef->new($ffi, %opts);
+ my $def = FFI::C::UnionDef->new(%opts);
+ my $def = FFI::C::UnionDef->new($ffi, %opts);
+ my $def = FFI::C::ArrayDef->new(%opts);
+ my $def = FFI::C::ArrayDef->new($ffi, %opts);
+
 The constructor for this class shouldn't be invoked directly.  If you try
 and exception will be thrown.
+
+For subclasses, the first argument should be the L<FFI::Platypus> instance
+that you want to use with the def.  If you do not provide it, then one
+will be created internally for you.  All def classes accept these standard options:
+
+=over 4
+
+=item name
+
+The L<FFI::Platypus> alias for this def.  This name can be used
+in function signatures when creating or attaching functions in L<FFI::Platypus>.
+
+=item class
+
+The Perl class for this def.  The Perl class can be used to create an instance
+of this def instead of invoking the C<create> method below.
+
+=item members
+
+This is an array reference, which specifies the memmber fields for the
+def.  How exactly it works depends on the subclass, so see the documentation
+for the specific def class that you are using.
+
+=back
 
 =cut
 
