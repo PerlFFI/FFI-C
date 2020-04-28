@@ -103,6 +103,8 @@ sub create
 {
   my($self) = @_;
 
+  return $self->class->new(@_) if $self->class;
+
   local $self->{size} = $self->{size};
   my $count = $self->{members}->{count};
   if(@_ == 1 && ! is_ref $_[0])
