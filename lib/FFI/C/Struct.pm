@@ -92,7 +92,7 @@ sub DESTROY
 
 =item L<FFI::C::Union>
 
-=item L<FFI::C::Union>
+=item L<FFI::C::UnionDef>
 
 =item L<FFI::Platypus::Record>
 
