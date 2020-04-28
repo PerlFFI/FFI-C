@@ -1,4 +1,5 @@
 use Test2::V0 -no_srand => 1;
+use FFI::C::FFI qw( malloc );
 use FFI::C::ArrayDef;
 use FFI::C::StructDef;
 
@@ -49,5 +50,130 @@ is(
   },
   'simple'
 );
+
+{
+  FFI::C::ArrayDef->new(
+    name => 'color_array_t',
+    class => 'Color::Array',
+    members => [
+      FFI::C::StructDef->new(
+        name => 'color_value_t',
+        class => 'Color::Value',
+        members => [
+          red   => 'uint8',
+          green => 'uint8',
+          blue  => 'uint8',
+        ],
+      ),
+      2,
+    ],
+  );
+
+  is(
+    Color::Array->new,
+    object {
+      call [ isa => 'Color::Array' ] => T();
+      call [ isa => 'FFI::C::Array' ] => T();
+      call [ get => 0 ] => object {
+        call [ isa => 'Color::Value' ] => T();
+        call red   => 0;
+        call green => 0;
+        call blue  => 0;
+        call [ red => 0xff ] => 0xff;
+        call red   => 0xff;
+        call green => 0;
+        call blue  => 0;
+      };
+      call [ get => 1 ] => object {
+        call [ isa => 'Color::Value' ] => T();
+        call red   => 0;
+        call green => 0;
+        call blue  => 0;
+      };
+      call [ get => 0 ] => object {
+        call [ isa => 'Color::Value' ] => T();
+        call red   => 0xff;
+        call green => 0;
+        call blue  => 0;
+      };
+      call [ get => 1 ] => object {
+        call [ isa => 'Color::Value' ] => T();
+        call red   => 0;
+        call green => 0;
+        call blue  => 0;
+      };
+      call count => 2;
+      call sub { my $self = shift; dies { $self->get(2) } } => match qr/OOB array index/;
+      call sub { my $self = shift; dies { $self->get(-1) } } => match qr/Negative array index/;
+    },
+    'default count'
+  );
+
+  is(
+    Color::Array->new(3),
+    object {
+      call [ isa => 'Color::Array' ] => T();
+      call [ isa => 'FFI::C::Array' ] => T();
+      call count => 3;
+      call [ get => 0 ] => object {};
+      call [ get => 1 ] => object {};
+      call [ get => 2 ] => object {};
+      call sub { my $self = shift; dies { $self->get(3) } } => match qr/OOB array index/;
+    },
+    'override count'
+  );
+}
+
+{
+  my $ffi = FFI::Platypus->new( api => 1 );
+  my $vdef;
+
+  FFI::C::ArrayDef->new(
+    $ffi,
+    name => 'color_array_t',
+    class => 'Color::VarArray',
+    members => [
+      $vdef = FFI::C::StructDef->new(
+        name => 'color_value_t',
+        class => 'Color::VarValue',
+        members => [
+          red   => 'uint8',
+          green => 'uint8',
+          blue  => 'uint8',
+        ],
+      ),
+    ],
+  );
+
+  is(
+    dies { Color::VarArray->new },
+    match qr/Cannot create array without knowing the number of elements/,
+    'var array dies without size',
+  );
+
+  is(
+    Color::VarArray->new(2),
+    object {
+      call [ isa => 'Color::VarArray' ] => T();
+      call [ get => 0 ] => object {};
+      call [ get => 1 ] => object {};
+      call sub { my $self = shift; dies { $self->get(2) } } => match qr/OOB array index/;
+      call sub { my $self = shift; dies { $self->get(-1) } } => match qr/Negative array index/;
+    },
+    'Create var array with size'
+  );
+
+  is(
+    $ffi->cast('opaque', 'color_array_t', malloc(10 * $vdef->size)),
+    object {
+      call [ isa => 'Color::VarArray' ] => T();
+      call [ get => 0 ] => object {};
+      call [ get => 1 ] => object {};
+      call sub { my $self = shift; dies { $self->get(-1) } } => match qr/Negative array index/;
+    },
+    'create from pointer',
+  );
+
+}
 
 done_testing;
