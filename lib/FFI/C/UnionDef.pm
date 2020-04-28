@@ -52,6 +52,30 @@ For a union, the order doesn't matter.
 
 This creates an instance of the C<union>, returns a L<FFI::C::Union>.
 
+=head1 SEE ALSO
+
+=over 4
+
+=item L<FFI::C>
+
+=item L<FFI::C::Array>
+
+=item L<FFI::C::ArrayDef>
+
+=item L<FFI::C::Def>
+
+=item L<FFI::C::Struct>
+
+=item L<FFI::C::StructDef>
+
+=item L<FFI::C::Union>
+
+=item L<FFI::C::Union>
+
+=item L<FFI::Platypus::Record>
+
+=back
+
 =cut
 
 1;

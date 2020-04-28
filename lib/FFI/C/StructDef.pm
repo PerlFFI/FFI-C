@@ -221,6 +221,8 @@ sub new
   $self;
 }
 
+1;
+
 =head1 METHODS
 
 =head2 create
@@ -230,6 +232,28 @@ sub new
 
 This creates an instance of the C<struct>, returns a L<FFI::C::Struct>.
 
-=cut
+=head1 SEE ALSO
 
-1;
+=over 4
+
+=item L<FFI::C>
+
+=item L<FFI::C::Array>
+
+=item L<FFI::C::ArrayDef>
+
+=item L<FFI::C::Def>
+
+=item L<FFI::C::Struct>
+
+=item L<FFI::C::StructDef>
+
+=item L<FFI::C::Union>
+
+=item L<FFI::C::Union>
+
+=item L<FFI::Platypus::Record>
+
+=back
+
+=cut
