@@ -193,13 +193,4 @@ sub new
   $self;
 }
 
-sub _common_destroy
-{
-  my($self) = @_;
-  if($self->{ptr} && !$self->{owner})
-  {
-    FFI::Platypus::Memory::free(delete $self->{ptr});
-  }
-}
-
 1;

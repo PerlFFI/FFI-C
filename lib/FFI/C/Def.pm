@@ -110,6 +110,15 @@ sub _generate_class
   });
 }
 
+sub _common_destroy
+{
+  my($self) = @_;
+  if($self->{ptr} && !$self->{owner})
+  {
+    FFI::Platypus::Memory::free(delete $self->{ptr});
+  }
+}
+
 =head1 METHODS
 
 =head2 ffi
