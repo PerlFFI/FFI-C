@@ -36,7 +36,7 @@ sub count { shift->{count} }
 sub tie
 {
   my @a;
-  CORE::tie @a, 'FFI::C::ArrayTie', shift;
+  CORE::tie @a, 'FFI::C::Array', shift;
   \@a;
 }
 
@@ -49,18 +49,16 @@ sub DESTROY
   }
 }
 
-package FFI::C::ArrayTie;
-
 sub TIEARRAY
 {
   my($class, $array) = @_;
-  bless \$array, $class;
+  $array;
 }
 
 sub FETCH
 {
   my($self, $index) = @_;
-  ${$self}->get($index);
+  $self->get($index);
 }
 
 sub STORE
@@ -71,13 +69,13 @@ sub STORE
 sub FETCHSIZE
 {
   my($self) = @_;
-  ${$self}->count;
+  $self->count;
 }
 
 sub STORESIZE
 {
   my($self) = @_;
-  ${$self}->count;
+  $self->count;
 }
 
 sub CLEAR
