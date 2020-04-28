@@ -10,9 +10,25 @@ use Sub::Install ();
 # ABSTRACT: Data definition for FFI
 # VERSION
 
+=head1 SYNOPSIS
+
+# EXAMPLE: examples/synopsis/structdef.pl
+
+=head1 DESCRIPTION
+
+This class is the base class for all def classes in the L<FFI::C> collection.
+The def classes are for defining C C<struct>, C<union> and array types that
+can be used from Perl and passed to C via L<FFI::Platypus>.
+
+You don't create an instance of this class directly, rather one of the subclasses:
+L<FFI::C::StructDef>, L<FFI::C::UnionDef>, L<FFI::C::ArrayDef>.
+
 =head1 CONSTRUCTOR
 
 =head2 new
+
+The constructor for this class shouldn't be invoked directly.  If you try
+and exception will be thrown.
 
 =cut
 
@@ -165,13 +181,36 @@ sub _common_destroy
 
 =head2 ffi
 
+ my $ffi = $def->ffi;
+
+Returns the L<FFI::Platypus> instance used by this def.
+
 =head2 name
+
+ my $name = $def->name;
+
+Return the L<FFI::Platypus> alias for this def.  This name can be used
+in function signatures when creating or attaching functions in L<FFI::Platypus>.
 
 =head2 class
 
+ my $class = $def->class;
+
+Returns the Perl class for this def, if one was specified.  The Perl class
+can be used to create an instance of this def instead of invoking the
+C<create> method below.
+
 =head2 size
 
+ my $size = $def->size;
+
+Returns the size of the def in bytes.
+
 =head2 align
+
+ my $align = $def->align;
+
+Returns the alignment in bytes of the def.
 
 =cut
 
@@ -182,6 +221,11 @@ sub size  { shift->{size} }
 sub align { shift->{align} }
 
 =head2 create
+
+ my $instance = $def->create;
+ my $instance = $def->class->new;  # if class was specified
+
+Creates an instance of the def.
 
 =cut
 
