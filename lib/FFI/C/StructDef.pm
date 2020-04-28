@@ -31,6 +31,8 @@ This class creates a def for a C C<struct>.
 
 =head1 CONSTRUCTOR
 
+=head2 new
+
  my $def = FFI::C::StructDef->new(%opts);
  my $def = FFI::C::StructDef->new($ffi, %opts);
 
@@ -44,8 +46,6 @@ This should be an array reference containing name, type pairs,
 in the order that they will be stored in the struct.
 
 =back
-
-=head2 new
 
 =cut
 
@@ -220,6 +220,8 @@ sub new
 
   $self;
 }
+
+=head1 METHODS
 
 =head2 create
 

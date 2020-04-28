@@ -11,4 +11,47 @@ use base qw( FFI::C::StructDef );
 # ABSTRACT: Union data definition for FFI
 # VERSION
 
+=head1 SYNOPSIS
+
+In your C code:
+
+# EXAMPLE: examples/synopsis/uniondef.c
+
+In your Perl code:
+
+# EXAMPLE: examples/synopsis/uniondef.pl
+
+=head1 DESCRIPTION
+
+This class creates a def for a C C<union>.
+
+=head1 CONSTRUCTOR
+
+=head2 new
+
+ my $def = FFI::C::UnionDef->new(%opts);
+ my $def = FFI::C::UnionDef->new($ffi, %opts);
+
+For standard def options, see L<FFI::C::Def>.
+
+=over 4
+
+=item members
+
+This should be an array reference containing name, type pairs.
+For a union, the order doesn't matter.
+
+=back
+
+=head1 METHODS
+
+=head2 create
+
+ my $instance = $def->create;
+ my $instance = $def->class->new;  # if class was specified
+
+This creates an instance of the C<union>, returns a L<FFI::C::Union>.
+
+=cut
+
 1;
