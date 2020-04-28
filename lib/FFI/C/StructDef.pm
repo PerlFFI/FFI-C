@@ -4,9 +4,11 @@ use strict;
 use warnings;
 use 5.008001;
 use FFI::C::Struct;
+use FFI::C::FFI ();
 use FFI::Platypus 1.11;
-use Ref::Util qw( is_blessed_ref );
+use Ref::Util qw( is_blessed_ref is_plain_arrayref);
 use Carp ();
+use Sub::Install ();
 use constant _is_union => 0;
 use base qw( FFI::C::Def );
 
@@ -113,7 +115,136 @@ sub new
 
   Carp::carp("Unknown argument: $_") for sort keys %args;
 
+  if($self->class)
+  {
+
+    # first run through all the members, and make sure that we
+    # can generate a class based on the def.  That means that:
+    #  1. there is no constructor or destructor defined yet.
+    #  2. none of the member accessors already exist
+    #  3. Any nested cdefs have Perl classes.
+
+    foreach my $method (qw( new DESTROY ))
+    {
+      my $accessor = join '::', $self->class, $method;
+      Carp::croak("$accessor already defined") if $self->class->can($method);
+    }
+
+    foreach my $name (keys %{ $self->{members} })
+    {
+      next if $name =~ /^:/;
+      my $accessor = $self->class . '::' . $name;
+      Carp::croak("$accessor already exists")
+        if $self->class->can($name);
+      my $member = $self->{members}->{$name};
+      Carp::croak("Missing Perl class for $accessor")
+        if $member->{nest} && !$member->{nest}->{class};
+    }
+
+    require FFI::Platypus::Memory;
+
+    {
+      my $size = $self->size;
+      $size = 1 unless $size > 0;
+
+      Sub::Install::install_sub({
+        code => sub {
+          my $class = shift;
+          my($ptr, $owner);
+          if(@_ == 1 && is_plain_arrayref $_[0])
+          {
+            ($ptr, $owner) = @{ shift() };
+          }
+          else
+          {
+            $ptr = FFI::Platypus::Memory::malloc($size);
+            FFI::Platypus::Memory::memset($ptr, 0, $size);
+          }
+          bless {
+            ptr => $ptr,
+            owner => $owner,
+          }, $class;
+        },
+        into => $self->class,
+        as   => 'new',
+      });
+    }
+
+    Sub::Install::install_sub({
+      code => \&_common_destroy,
+      into => $self->class,
+      as   => 'DESTROY',
+    });
+
+    {
+      my $ffi = $self->ffi;
+
+      foreach my $name (keys %{ $self->{members} })
+      {
+        my $offset = $self->{members}->{$name}->{offset};
+        my $code;
+        if($self->{members}->{$name}->{nest})
+        {
+          my $class = $self->{members}->{$name}->{nest}->{class};
+          $code = sub {
+            my $self = shift;
+            my $ptr = $self->{ptr} + $offset;
+            $class->new([$ptr,$self]);
+          };
+        }
+        else
+        {
+          my $type = $self->{members}->{$name}->{spec} . '*';
+          my $size = $self->{members}->{$name}->{size};
+
+          my $set = $ffi->function( FFI::C::FFI::memcpy_addr() => ['opaque',$type,'size_t'] => $type)->sub_ref;
+          my $get = $ffi->function( 0                          => ['opaque'] => $type)->sub_ref;
+
+          if($self->{members}->{$name}->{rec})
+          {
+            $code = sub {
+              my $self = shift;
+              my $ptr = $self->{ptr} + $offset;
+              if(@_)
+              {
+                my $length = do { use bytes; length $_[0] };
+                my $src = \($size > $length ? $_[0] . ("\0" x ($size-$length)) : $_[0]);
+                return $set->($ptr, $src, $size);
+              }
+              $get->($ptr)
+            };
+          }
+          else
+          {
+            $code = sub {
+              my $self = shift;
+              my $ptr = $self->{ptr} + $offset;
+              @_
+                ? ${ $set->($ptr,\$_[0],$size) }
+                : ${ $get->($ptr) };
+            };
+          }
+        }
+
+        Sub::Install::install_sub({
+          code => $code,
+          into => $self->class,
+          as   => $name,
+        });
+      }
+    }
+  }
+
   $self;
+}
+
+sub _common_destroy
+{
+  my($self) = @_;
+  if($self->{ptr} && !$self->{owner})
+  {
+    FFI::Platypus::Memory::free(delete $self->{ptr});
+  }
 }
 
 1;

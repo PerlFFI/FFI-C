@@ -27,6 +27,7 @@ sub new
   my $self = bless {
     ffi     => $ffi,
     name    => delete $args{name},
+    class   => delete $args{class},
     members => {},
     align   => 0,
     size    => 0,
@@ -59,9 +60,10 @@ sub new
 
 =cut
 
-sub name { shift->{name} }
-sub ffi  { shift->{ffi} }
-sub size { shift->{size} }
+sub name  { shift->{name} }
+sub class { shift->{class} }
+sub ffi   { shift->{ffi} }
+sub size  { shift->{size} }
 sub align { shift->{align} }
 
 =head2 create
