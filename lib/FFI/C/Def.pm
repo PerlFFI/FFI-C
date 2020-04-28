@@ -268,7 +268,10 @@ Creates an instance of the def.
 
 sub create
 {
-  my $self = shift;;
+  my $self = shift;
+
+  return $self->class->new(@_) if $self->class;
+
   my $ptr;
   my $owner;
 
