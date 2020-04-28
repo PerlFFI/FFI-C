@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use 5.008001;
 use FFI::C::FFI qw( malloc memset );
-use Ref::Util qw( is_blessed_ref is_plain_arrayref );
+use Ref::Util qw( is_blessed_ref is_plain_arrayref is_ref );
 use Sub::Install ();
 
 # ABSTRACT: Data definition for FFI
@@ -40,9 +40,10 @@ sub new
     my $cdef = ref($self);
     $cdef =~ s/Def$//;
     $ffi->load_custom_type('::CDef' => $self->name,
-      name => $self->name,
-      def  => $self,
-      cdef => $cdef,
+      name  => $self->name,
+      class => $self->class,
+      def   => $self,
+      cdef  => $cdef,
     );
   }
 
@@ -76,10 +77,51 @@ sub _generate_class
 
   require FFI::Platypus::Memory;
 
+  if($self->isa('FFI::C::ArrayDef'))
+  {
+
+    my $size = $self->size;
+    my $count = $self->{members}->{count};
+    my $member_size = $self->{members}->{member}->size;
+
+    Sub::Install::install_sub({
+      code => sub {
+        my $class = shift;
+        my($ptr, $owner);
+
+        my $size  = $size;
+        my $count = $count;
+        if(@_ == 1 && !is_ref $_[0])
+        {
+          $count = shift;
+          $size = $member_size * $count;
+        }
+
+        if(@_ == 1 && is_plain_arrayref $_[0])
+        {
+          ($ptr, $owner) = @{ shift() };
+        }
+        else
+        {
+          Carp::croak("Cannot create array without knowing the number of elements")
+            unless $size;
+          $ptr = FFI::Platypus::Memory::malloc($size);
+          FFI::Platypus::Memory::memset($ptr, 0, $size);
+        }
+        bless {
+          ptr   => $ptr,
+          owner => $owner,
+          count => $count,
+        }, $class;
+      },
+      into => $self->class,
+      as   => 'new',
+    });
+  }
+  else
   {
     my $size = $self->size;
     $size = 1 unless $size > 0;
-
     Sub::Install::install_sub({
       code => sub {
         my $class = shift;
@@ -124,6 +166,8 @@ sub _common_destroy
 =head2 ffi
 
 =head2 name
+
+=head2 class
 
 =head2 size
 

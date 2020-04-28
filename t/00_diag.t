@@ -15,6 +15,7 @@ $modules{$_} = $_ for qw(
   FFI::Platypus::Memory
   FFI::Platypus::Record
   Ref::Util
+  Sub::Install
   Test2::V0
 );
 

@@ -3,8 +3,9 @@ package FFI::C::ArrayDef;
 use strict;
 use warnings;
 use 5.008001;
-use Ref::Util qw( is_blessed_ref is_plain_arrayref );
+use Ref::Util qw( is_blessed_ref is_plain_arrayref is_ref );
 use FFI::C::Array;
+use Sub::Install ();
 use base qw( FFI::C::Def );
 
 # ABSTRACT: Array data definition for FFI
@@ -52,6 +53,43 @@ sub new
 
   Carp::carp("Unknown argument: $_") for sort keys %args;
 
+  if($self->class)
+  {
+    # not handled by the superclass:
+    #  3. Any nested cdefs must have Perl classes.
+
+    {
+      my $member = $self->{members}->{member};
+      my $accessor = $self->class . '::get';
+      Carp::croak("Missing Perl class for $accessor")
+        if $member->{nest} && !$member->{nest}->{class};
+    }
+
+    $self->_generate_class(qw( get ));
+
+    {
+      my $member_class = $self->{members}->{member}->class;
+      my $member_size  = $self->{members}->{member}->size;
+      Sub::Install::install_sub({
+        code => sub {
+          my($self, $index) = @_;
+          Carp::croak("Negative array index") if $index < 0;
+          Carp::croak("OOB array index") if $self->{count} && $index >= $self->{count};
+          my $ptr = $self->{ptr} + $member_size * $index;
+          $member_class->new([$ptr,$self]);
+        },
+        into => $self->class,
+        as   => 'get',
+      });
+    }
+
+    {
+      no strict 'refs';
+      push @{ join '::', $self->class, 'ISA' }, 'FFI::C::Array';
+    }
+
+  }
+
   $self;
 }
 
@@ -67,7 +105,7 @@ sub create
 
   local $self->{size} = $self->{size};
   my $count = $self->{members}->{count};
-  if(@_ == 1 && $_[0] =~ /^[0-9]+$/)
+  if(@_ == 1 && ! is_ref $_[0])
   {
     $count = shift;
     $self->{size} = $self->{members}->{member}->size * $count;
