@@ -26,7 +26,7 @@ subtest 'basic' => sub {
   is(
     do {
       my $o = $def->create;
-      $o->get(0)->bar(-42);
+      $o->[0]->bar(-42);
       $def->ffi->cast('foo_t' => 'record(Foo)*', $o);
     },
     object {
