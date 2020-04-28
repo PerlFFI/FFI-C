@@ -286,6 +286,7 @@ sub ffi_custom_type_api_1
       my $ptr = $_[0]->{ptr};
       Carp::croak("pointer for $name went away")
         unless defined $ptr;
+      $ptr;
     };
     $native_to_perl = sub {
       defined $_[0]

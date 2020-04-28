@@ -1,5 +1,5 @@
-FFI-C-*
+/FFI-C-*
 /.build/
+/corpus/examples/arch/
 *.swp
-
-
+_build
