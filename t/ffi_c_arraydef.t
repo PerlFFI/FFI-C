@@ -38,6 +38,13 @@ is(
         call sub { shift->u64     } => 6;
       };
       call_list sub { map { $_->u64 } @{ shift() } } => [ 0, 0, 0, 0, 6, 10, 0, 0, 0, 0 ];
+      call tie => array {
+        item object {
+          call [ isa => 'FFI::C::Struct' ] => T();
+          call sub { shift->u64 } => $_;
+        } for ( 0, 0, 0, 0, 6, 10, 0, 0, 0, 0 );
+        end;
+      };
     };
   },
   'simple'
