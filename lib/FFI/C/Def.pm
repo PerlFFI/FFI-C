@@ -61,7 +61,7 @@ of this def instead of invoking the C<create> method below.
 
 =item members
 
-This is an array reference, which specifies the memmber fields for the
+This is an array reference, which specifies the member fields for the
 def.  How exactly it works depends on the subclass, so see the documentation
 for the specific def class that you are using.
 
