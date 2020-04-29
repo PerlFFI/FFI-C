@@ -218,6 +218,12 @@ sub new
             $code = sub {
               my $self = shift;
               my $index = shift;
+              unless(defined $index)
+              {
+                my @a;
+                tie @a, 'FFI::C::Struct::MemberArrayTie', $self, $name, $count;
+                return \@a;
+              }
               Carp::croak("Negative index on array member") if $index < 0;
               Carp::croak("OOB index on array member") if $index >= $count;
               my $ptr = $self->{ptr} + $offset + $index * $unitsize;
