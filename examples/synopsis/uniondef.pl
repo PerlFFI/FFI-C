@@ -22,4 +22,4 @@ $ffi->attach( print_anyint_as_u32 => ['anyint_t'] );
 
 my $int = AnyInt->new;
 $int->u8(42);
-print_anyint_as_u32($int);  # 0x2a on Intel, 
+print_anyint_as_u32($int);  # 0x2a on Intel,
