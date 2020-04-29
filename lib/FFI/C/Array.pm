@@ -66,7 +66,7 @@ sub get
   Carp::croak("OOB array index") if $self->{count} && $index >= $self->{count};
   my $member = $self->{def}->{members}->{member};
   my $ptr = $self->{ptr} + $member->size * $index;
-  $member->create([$ptr,$self->{owner} || $self]);
+  $member->create($ptr,$self->{owner} || $self);
 }
 
 sub count { shift->{count} }
