@@ -212,12 +212,14 @@ sub new
               $get->($ptr)
             };
           }
-          elsif($self->{members}->{$name}->{count})
+          elsif(my $count = $self->{members}->{$name}->{count})
           {
             my $unitsize = $self->{members}->{$name}->{unitsize};
             $code = sub {
               my $self = shift;
               my $index = shift;
+              Carp::croak("Negative index on array member") if $index < 0;
+              Carp::croak("OOB index on array member") if $index >= $count;
               my $ptr = $self->{ptr} + $offset + $index * $unitsize;
               @_
                 ? ${ $set->($ptr,\$_[0],$size) }
