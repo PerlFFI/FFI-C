@@ -287,6 +287,8 @@ This creates an instance of the C<struct>, returns a L<FFI::C::Struct>.
 
 =item L<FFI::C::UnionDef>
 
+=item L<FFI::C::Util>
+
 =item L<FFI::Platypus::Record>
 
 =back

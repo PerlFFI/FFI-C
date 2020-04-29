@@ -20,6 +20,7 @@ supported.
 - [FFI::C::StructDef](https://metacpan.org/pod/FFI::C::StructDef)
 - [FFI::C::Union](https://metacpan.org/pod/FFI::C::Union)
 - [FFI::C::UnionDef](https://metacpan.org/pod/FFI::C::UnionDef)
+- [FFI::C::Util](https://metacpan.org/pod/FFI::C::Util)
 - [FFI::Platypus::Record](https://metacpan.org/pod/FFI::Platypus::Record)
 
 # AUTHOR
