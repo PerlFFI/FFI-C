@@ -35,7 +35,7 @@ This function initializes the members of an instance.
 sub init
 {
   my($inst, $values) = @_;
-  if($inst->isa('FFI::C::Array'))
+  if(is_blessed_ref $inst && $inst->isa('FFI::C::Array'))
   {
     Carp::croak("Tried to initalize a @{[ ref $inst ]} with something other than an array reference")
       unless is_plain_arrayref $values;
@@ -48,18 +48,7 @@ sub init
     foreach my $name (keys %$values)
     {
       my $value = $values->{$name};
-      if(is_plain_hashref $value || is_plain_arrayref $value)
-      {
-        init($inst->$name, $value);
-      }
-      elsif(!is_ref $value)
-      {
-        $inst->$name($value);
-      }
-      else
-      {
-        Carp::croak("Tried to initalize member with something other than a hash, array reference or plain scalar");
-      }
+      $inst->$name($value);
     }
   }
   else
