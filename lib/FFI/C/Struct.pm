@@ -83,6 +83,8 @@ sub AUTOLOAD
 
     if(@_)
     {
+      Carp::croak("$name tried to set member to non-scalar") if is_ref $_[0];
+
       my $src = \$_[0];
 
       # For fixed strings, pad short strings with NULLs

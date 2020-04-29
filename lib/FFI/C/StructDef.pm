@@ -224,7 +224,6 @@ sub new
             my $atype    = $self->{members}->{$name}->{spec} . "[$count]";
             my $all = $ffi->function( FFI::C::FFI::memcpy_addr() => ['opaque',$atype,'size_t'] => 'void' );
             $code = sub {
-              $DB::single = 1;
               my $self = shift;
               if(defined $_[0])
               {
@@ -264,6 +263,7 @@ sub new
             $code = sub {
               my $self = shift;
               my $ptr = $self->{ptr} + $offset;
+              Carp::croak("$name tried to set member to non-scalar") if @_ && is_ref $_[0];
               @_
                 ? ${ $set->($ptr,\$_[0],$size) }
                 : ${ $get->($ptr) };
