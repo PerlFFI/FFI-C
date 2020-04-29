@@ -91,6 +91,10 @@ sub new
       {
         Carp::croak("Illegal member name");
       }
+      elsif($name eq 'new')
+      {
+        Carp::croak("new now allowed as a member name");
+      }
 
       if(my $def = $self->ffi->_def('FFI::C::Def', $spec))
       {
