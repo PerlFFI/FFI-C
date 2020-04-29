@@ -3,7 +3,7 @@ package FFI::C::Util;
 use strict;
 use warnings;
 use 5.008001;
-use Ref::Util qw( is_blessed_ref );
+use Ref::Util qw( is_blessed_ref is_plain_arrayref is_plain_hashref is_ref );
 use Carp ();
 use base qw( Exporter );
 
@@ -25,10 +25,47 @@ the various def instances provided by L<FFI::C>
 
 =head2 init
 
+ init $instance, \%values;  # for Struct/Union
+ init $instance, \@values;  # for Array
+
+This function initializes the members of an instance.
+
 =cut
 
 sub init
 {
+  my($inst, $values) = @_;
+  if($inst->isa('FFI::C::Array'))
+  {
+    Carp::croak("Tried to initalize a @{[ ref $inst ]} with something other than an array reference")
+      unless is_plain_arrayref $values;
+    init($inst->get($_), $values->[$_]) for 0..$#$values;
+  }
+  elsif(is_blessed_ref $inst)
+  {
+    Carp::croak("Tried to initalize a @{[ ref $inst ]} with something other than an hash reference")
+      unless is_plain_hashref $values;
+    foreach my $name (keys %$values)
+    {
+      my $value = $values->{$name};
+      if(is_plain_hashref $value || is_plain_arrayref $value)
+      {
+        init($inst->$name, $value);
+      }
+      elsif(!is_ref $value)
+      {
+        $inst->$name($value);
+      }
+      else
+      {
+        Carp::croak("Tried to initalize member with something other than a hash, array reference or plain scalar");
+      }
+    }
+  }
+  else
+  {
+    Carp::croak("Not an object");
+  }
 }
 
 =head2 owned
@@ -53,8 +90,8 @@ Reasons an instance might not be owned are:
 
 sub owned
 {
-  my $object = shift;
-  !!($object->{ptr} && !$object->{owner});
+  my $inst = shift;
+  !!($inst->{ptr} && !$inst->{owner});
 }
 
 =head2 take
@@ -83,10 +120,10 @@ a function that takes an C<opaque> argument.
 
 sub take ($)
 {
-  my $object = shift;
-  Carp::croak("Not an object") unless is_blessed_ref $object;
-  Carp::croak("Object is owned by someone else") if $object->{owner};
-  my $ptr = delete $object->{ptr};
+  my $inst = shift;
+  Carp::croak("Not an object") unless is_blessed_ref $inst;
+  Carp::croak("Object is owned by someone else") if $inst->{owner};
+  my $ptr = delete $inst->{ptr};
   Carp::croak("Object pointer went away") unless $ptr;
   $ptr;
 }
