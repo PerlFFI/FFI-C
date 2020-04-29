@@ -44,11 +44,11 @@ This should be an array reference the member type, and
 optionally the number of elements.  Examples:
 
  my $struct = FFI::C::StructDef->new(...);
-
+ 
  my $fixed = FFI::C::ArrayDef->new(
    members => [ $struct, 10 ],
  );
-
+ 
  my $var = FFI::C::ArrayDef->new(
    members => [ $struct ],
  );
@@ -148,7 +148,7 @@ sub new
  my $instance = $def->class->new($count);  # if class was specified
 
 This creates an instance of the array.  If C<$count> is given, this
-is used for the element count, possibly overriding what was specified 
+is used for the element count, possibly overriding what was specified
 when the def was created.  If the def doesn't have an element count
 specified, then you MUST provide it here.  Returns a L<FFI::C::Array>.
 

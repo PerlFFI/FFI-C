@@ -17,7 +17,7 @@ This class represents an instance of a C C<union>.  This class can be created us
 C<new> on the generated class, if that was specified for the L<FFI::C::UnionDef>,
 or by using the C<create> method on L<FFI::C::UnionDef>.
 
-For each member defined in the L<FFI::C::UnionDef> there is an accessor for the 
+For each member defined in the L<FFI::C::UnionDef> there is an accessor for the
 L<FFI::C::Union> instance.
 
 =head1 CONSTRUCTOR

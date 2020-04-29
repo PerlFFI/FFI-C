@@ -72,6 +72,9 @@ for the specific def class that you are using.
 sub new
 {
   my $class = shift;
+
+  Carp::croak("Attempt to call new on a def object (did you mean ->create?)") if is_blessed_ref $class;
+
   my $ffi = is_blessed_ref($_[0]) && $_[0]->isa('FFI::Platypus') ? shift : FFI::Platypus->new( api => 1 );
   my %args = @_;
 

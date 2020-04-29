@@ -112,6 +112,16 @@ sub new
         $member{size}   = $self->ffi->sizeof($spec);
         $member{align}  = $self->ffi->alignof($spec);
       }
+      elsif($self->_is_kind($spec, 'array'))
+      {
+        $member{spec}     = $self->ffi->_unitof($spec);
+        $member{count}    = $self->ffi->_countof($spec);
+        $member{size}     = $self->ffi->sizeof($spec);
+        $member{unitsize} = $self->ffi->sizeof($member{spec});
+        $member{align}    = $self->ffi->alignof($spec);
+        Carp::croak("array members must have at least one element")
+          unless $member{count} > 0;
+      }
       elsif($self->_is_kind("$spec*", 'record'))
       {
         $member{spec}   = $spec;
@@ -200,6 +210,18 @@ sub new
                 return $set->($ptr, $src, $size);
               }
               $get->($ptr)
+            };
+          }
+          elsif($self->{members}->{$name}->{count})
+          {
+            my $unitsize = $self->{members}->{$name}->{unitsize};
+            $code = sub {
+              my $self = shift;
+              my $index = shift;
+              my $ptr = $self->{ptr} + $offset + $index * $unitsize;
+              @_
+                ? ${ $set->($ptr,\$_[0],$size) }
+                : ${ $get->($ptr) };
             };
           }
           else

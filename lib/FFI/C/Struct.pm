@@ -17,7 +17,7 @@ This class represents an instance of a C C<struct>.  This class can be created u
 C<new> on the generated class, if that was specified for the L<FFI::C::StructDef>,
 or by using the C<create> method on L<FFI::C::StructDef>.
 
-For each member defined in the L<FFI::C::StructDef> there is an accessor for the 
+For each member defined in the L<FFI::C::StructDef> there is an accessor for the
 L<FFI::C::Struct> instance.
 
 =head1 CONSTRUCTOR
@@ -40,7 +40,15 @@ sub AUTOLOAD
   if(my $member = $self->{def}->{members}->{$name})
   {
     my $ptr = $self->{ptr} + $member->{offset};
+
     return $member->{nest}->create([$ptr,$self->{owner} || $self]) if $member->{nest};
+
+    if(defined $member->{count})
+    {
+      my $index = shift;
+      $ptr += $index * $member->{unitsize};
+    }
+
     my $ffi = $self->{def}->ffi;
     if(@_)
     {
@@ -50,7 +58,7 @@ sub AUTOLOAD
       $src = \($_[0] . ("\0" x ($member->{size} - do { use bytes; length $_[0] }))) if $member->{rec} && $member->{size} > do { use bytes; length $_[0] };
 
       $ffi->function( FFI::C::FFI::memcpy_addr() => [ 'opaque', $member->{spec} . "*", 'size_t' ] => 'opaque' )
-          ->call($ptr, $src, $member->{size});
+          ->call($ptr, $src, $member->{unitsize} || $member->{size});
     }
 
     my $value = $ffi->cast( 'opaque' => $member->{spec} . "*", $ptr );
