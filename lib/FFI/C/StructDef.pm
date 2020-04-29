@@ -3,6 +3,7 @@ package FFI::C::StructDef;
 use strict;
 use warnings;
 use 5.008001;
+use FFI::C::Util;
 use FFI::C::Struct;
 use FFI::C::FFI ();
 use FFI::Platypus 1.20;
@@ -193,7 +194,9 @@ sub new
           $code = sub {
             my $self = shift;
             my $ptr = $self->{ptr} + $offset;
-            $class->new($ptr,$self);
+            my $m = $class->new($ptr,$self);
+            FFI::C::Util::init($m, $_[0]) if @_;
+            $m;
           };
         }
         else

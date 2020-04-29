@@ -2,6 +2,7 @@ package FFI::C::Struct;
 
 use strict;
 use warnings;
+use FFI::C::Util;
 use FFI::C::FFI ();
 use Ref::Util qw( is_ref is_plain_arrayref );
 
@@ -42,7 +43,12 @@ sub AUTOLOAD
   {
     my $ptr = $self->{ptr} + $member->{offset};
 
-    return $member->{nest}->create($ptr,$self->{owner} || $self) if $member->{nest};
+    if($member->{nest})
+    {
+      my $m = $member->{nest}->create($ptr,$self->{owner} || $self);
+      FFI::C::Util::init($m, $_[0]) if @_;
+      return $m;
+    }
 
     my $ffi = $self->{def}->ffi;
 

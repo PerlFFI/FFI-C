@@ -104,8 +104,7 @@ subtest init => sub {
       };
       call a => object {
         call [ isa => 'Class4' ] => T();
-        # todo
-        #call u16 => 900;
+        call u16 => 900;
       };
     },
     'values initalized',
