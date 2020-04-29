@@ -3,7 +3,7 @@ package FFI::C::ArrayDef;
 use strict;
 use warnings;
 use 5.008001;
-use Ref::Util qw( is_blessed_ref is_plain_arrayref is_ref );
+use Ref::Util qw( is_blessed_ref is_ref );
 use FFI::C::Array;
 use Sub::Install ();
 use base qw( FFI::C::Def );
@@ -121,7 +121,7 @@ sub new
           Carp::croak("Negative array index") if $index < 0;
           Carp::croak("OOB array index") if $self->{count} && $index >= $self->{count};
           my $ptr = $self->{ptr} + $member_size * $index;
-          $member_class->new([$ptr,$self]);
+          $member_class->new($ptr,$self);
         },
         into => $self->class,
         as   => 'get',
@@ -168,7 +168,7 @@ sub create
     $self->{size} = $self->{members}->{member}->size * $count;
   }
 
-  if( (@_ == 1 && is_plain_arrayref $_[0]) || ($self->size) )
+  if( (@_ == 2 && ! is_ref $_[0]) || ($self->size) )
   {
     my $array = $self->SUPER::create(@_);
     $array->{count} = $count;

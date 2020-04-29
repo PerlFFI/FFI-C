@@ -187,7 +187,7 @@ sub new
           $code = sub {
             my $self = shift;
             my $ptr = $self->{ptr} + $offset;
-            $class->new([$ptr,$self]);
+            $class->new($ptr,$self);
           };
         }
         else

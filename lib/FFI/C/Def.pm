@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use 5.008001;
 use FFI::C::FFI qw( malloc memset );
-use Ref::Util qw( is_blessed_ref is_plain_arrayref is_ref );
+use Ref::Util qw( is_blessed_ref is_ref );
 use Sub::Install ();
 
 # ABSTRACT: Data definition for FFI
@@ -154,9 +154,9 @@ sub _generate_class
           $size = $member_size * $count;
         }
 
-        if(@_ == 1 && is_plain_arrayref $_[0])
+        if(@_ == 2 && ! is_ref $_[0])
         {
-          ($ptr, $owner) = @{ shift() };
+          ($ptr, $owner) = @_;
         }
         else
         {
@@ -183,9 +183,9 @@ sub _generate_class
       code => sub {
         my $class = shift;
         my($ptr, $owner);
-        if(@_ == 1 && is_plain_arrayref $_[0])
+        if(@_ == 2 && ! is_ref $_[0])
         {
-          ($ptr, $owner) = @{ shift() };
+          ($ptr, $owner) = @_;
         }
         else
         {
@@ -279,9 +279,9 @@ sub create
   my $ptr;
   my $owner;
 
-  if(@_ == 1 && is_plain_arrayref $_[0])
+  if(@_ == 2 && ! is_ref $_[0])
   {
-    ($ptr, $owner) = @{ shift() };
+    ($ptr, $owner) = @_;
   }
   else
   {

@@ -41,7 +41,7 @@ sub AUTOLOAD
   {
     my $ptr = $self->{ptr} + $member->{offset};
 
-    return $member->{nest}->create([$ptr,$self->{owner} || $self]) if $member->{nest};
+    return $member->{nest}->create($ptr,$self->{owner} || $self) if $member->{nest};
 
     if(defined $member->{count})
     {
