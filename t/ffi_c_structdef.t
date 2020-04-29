@@ -158,19 +158,22 @@ is(
 
   FFI::C::StructDef->new(
     $ffi,
+    name => 'value_color_t',
+    class => 'Color::Value',
+    members => [
+      red   => 'uint8',
+      green => 'uint8',
+      blue  => 'uint8',
+    ]
+  );
+
+  FFI::C::StructDef->new(
+    $ffi,
     name    => 'named_color_t',
     class   => 'Color::Named',
     members => [
       name => 'string(5)',
-      value => FFI::C::StructDef->new(
-        name => 'value_color_t',
-        class => 'Color::Value',
-        members => [
-          red   => 'uint8',
-          green => 'uint8',
-          blue  => 'uint8',
-        ],
-      ),
+      value => 'value_color_t',
     ],
   );
 
