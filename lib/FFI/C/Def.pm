@@ -387,6 +387,8 @@ sub ffi_custom_type_api_1
 
 =item L<FFI::C::UnionDef>
 
+=item L<FFI::C::Util>
+
 =item L<FFI::Platypus::Record>
 
 =back

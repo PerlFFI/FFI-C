@@ -143,6 +143,8 @@ sub CLEAR
 
 =item L<FFI::C::UnionDef>
 
+=item L<FFI::C::Util>
+
 =item L<FFI::Platypus::Record>
 
 =back

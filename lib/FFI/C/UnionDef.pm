@@ -72,6 +72,8 @@ This creates an instance of the C<union>, returns a L<FFI::C::Union>.
 
 =item L<FFI::C::UnionDef>
 
+=item L<FFI::C::Util>
+
 =item L<FFI::Platypus::Record>
 
 =back
