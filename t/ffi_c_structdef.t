@@ -217,6 +217,7 @@ is(
       is($ar->e(0), 1, 'a.get.0 = 1');
       is($ar->e(1), 2, 'a.get.1 = 2');
       is($ar->e(2), 3, 'a.get.2 = 3');
+      is($ar->e, [1,2,3], 'a = [1,2,3]');
 
       is(
         dies { $ar->e(-1) },
@@ -255,6 +256,7 @@ is(
       is($ar->e->[1], 2, 'a.get.1 = 2');
       is($ar->e->[2], 3, 'a.get.2 = 3');
       is(scalar @{ $ar->e }, 3, 'a.length = 3');
+      is($ar->e, [1,2,3], 'a = [1,2,3]');
 
       is(
         dies { $ar->e(-1) },
@@ -279,6 +281,9 @@ is(
         },
         'cast from bytes to color worked'
       );
+
+      is($ar->e([4,5,6]), [4,5,6], 'a = [4,5,6]');
+      is($ar->e, [4,5,6], 'a == [4,5,6]');
     }
   }
 
@@ -304,6 +309,7 @@ is(
       is($ar->e(0), 1, 'a.get.0 = 1');
       is($ar->e(1), 2, 'a.get.1 = 2');
       is($ar->e(2), 3, 'a.get.2 = 3');
+      is($ar->e, [1,2,3], 'a = [1,2,3]');
 
       is(
         dies { $ar->e(-1) },
@@ -342,6 +348,7 @@ is(
       is($ar->e->[1], 2, 'a.get.1 = 2');
       is($ar->e->[2], 3, 'a.get.2 = 3');
       is(scalar @{ $ar->e }, 3, 'a.length = 3');
+      is($ar->e, [1,2,3], 'a = [1,2,3]');
 
       is(
         dies { $ar->e(-1) },
@@ -366,6 +373,9 @@ is(
         },
         'cast from bytes to color worked'
       );
+
+      is($ar->e([4,5,6]), [4,5,6], 'a = [4,5,6]');
+      is($ar->e, [4,5,6], 'a == [4,5,6]');
     }
   }
 

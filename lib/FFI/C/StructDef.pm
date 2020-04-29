@@ -6,11 +6,13 @@ use 5.008001;
 use FFI::C::Struct;
 use FFI::C::FFI ();
 use FFI::Platypus 1.20;
-use Ref::Util qw( is_blessed_ref is_plain_arrayref);
+use Ref::Util qw( is_blessed_ref is_plain_arrayref is_ref );
 use Carp ();
 use Sub::Install ();
 use constant _is_union => 0;
 use base qw( FFI::C::Def );
+
+our @CARP_NOT = qw( FFI::C::Util );
 
 # ABSTRACT: Structured data definition for FFI
 # VERSION
@@ -196,8 +198,8 @@ sub new
         }
         else
         {
-          my $type = $self->{members}->{$name}->{spec} . '*';
-          my $size = $self->{members}->{$name}->{size};
+          my $type  = $self->{members}->{$name}->{spec} . '*';
+          my $size  = $self->{members}->{$name}->{size};
 
           my $set = $ffi->function( FFI::C::FFI::memcpy_addr() => ['opaque',$type,'size_t'] => $type)->sub_ref;
           my $get = $ffi->function( 0                          => ['opaque'] => $type)->sub_ref;
@@ -219,21 +221,42 @@ sub new
           elsif(my $count = $self->{members}->{$name}->{count})
           {
             my $unitsize = $self->{members}->{$name}->{unitsize};
+            my $atype    = $self->{members}->{$name}->{spec} . "[$count]";
+            my $all = $ffi->function( FFI::C::FFI::memcpy_addr() => ['opaque',$atype,'size_t'] => 'void' );
             $code = sub {
+              $DB::single = 1;
               my $self = shift;
-              my $index = shift;
-              unless(defined $index)
+              if(defined $_[0])
               {
-                my @a;
-                tie @a, 'FFI::C::Struct::MemberArrayTie', $self, $name, $count;
-                return \@a;
+                if(is_plain_arrayref $_[0])
+                {
+                  my $array = shift;
+                  Carp::croak("$name OOB index on array member") if @$array > $count;
+                  my $ptr = $self->{ptr} + $offset;
+                  my $size = (@$array ) * $unitsize;
+                  $all->($ptr, $array, (@$array * $unitsize));
+                  # we don't want to have to get the array and tie it if
+                  # it isn't going to be used anyway.
+                  return unless defined wantarray;  ## no critic (Freenode::Wantarray)
+                }
+                elsif(! is_ref $_[0])
+                {
+                  my $index = shift;
+                  Carp::croak("$name Negative index on array member") if $index < 0;
+                  Carp::croak("$name OOB index on array member") if $index >= $count;
+                  my $ptr = $self->{ptr} + $offset + $index * $unitsize;
+                  return @_
+                    ? ${ $set->($ptr,\$_[0],$unitsize) }
+                    : ${ $get->($ptr) };
+                }
+                else
+                {
+                  Carp::croak("$name tried to set element to non-scalar");
+                }
               }
-              Carp::croak("Negative index on array member") if $index < 0;
-              Carp::croak("OOB index on array member") if $index >= $count;
-              my $ptr = $self->{ptr} + $offset + $index * $unitsize;
-              @_
-                ? ${ $set->($ptr,\$_[0],$size) }
-                : ${ $get->($ptr) };
+              my @a;
+              tie @a, 'FFI::C::Struct::MemberArrayTie', $self, $name, $count;
+              return \@a;
             };
           }
           else

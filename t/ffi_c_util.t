@@ -2,6 +2,7 @@ use Test2::V0 -no_srand => 1;
 use FFI::C::Util qw( owned take init );
 use FFI::Platypus::Memory qw( free );
 use FFI::C::StructDef;
+use FFI::C::UnionDef;
 use FFI::C::ArrayDef;
 
 subtest 'owned / take' => sub {
@@ -65,16 +66,26 @@ subtest init => sub {
           2,
         ],
       ),
+      z => 'sint16[3]',
+      a => FFI::C::UnionDef->new(
+        class => 'Class4',
+        members => [
+          u8  => 'uint8',
+          u16 => 'uint16',
+        ],
+      ),
     ],
   );
 
   my $inst = $def->create;
   init($inst, {
     x => 1,
-    y => [ 
+    y => [
       { foo => 2, bar => 3, baz => 5.5 },
       { foo => 6, bar => 7, baz => 8.8 },
-    ]
+    ],
+    z => [ 1, 2, 3 ],
+    a => { u16 => 900 },
   });
 
   is(
@@ -90,6 +101,11 @@ subtest init => sub {
         call [ get => 1 ] => object {
           call [ isa => 'Class3' ] => T();
         };
+      };
+      call a => object {
+        call [ isa => 'Class4' ] => T();
+        # todo
+        #call u16 => 900;
       };
     },
     'values initalized',

@@ -3,6 +3,7 @@ package FFI::C::Struct;
 use strict;
 use warnings;
 use FFI::C::FFI ();
+use Ref::Util qw( is_ref is_plain_arrayref );
 
 # ABSTRACT: Structured data instance for FFI
 # VERSION
@@ -43,14 +44,34 @@ sub AUTOLOAD
 
     return $member->{nest}->create($ptr,$self->{owner} || $self) if $member->{nest};
 
+    my $ffi = $self->{def}->ffi;
+
     if(defined $member->{count})
     {
-      my $index = shift;
-      if(defined $index)
+      if(defined $_[0])
       {
-        Carp::croak("Negative index on array member") if $index < 0;
-        Carp::croak("OOB index on array member") if $index >= $member->{count};
-        $ptr += $index * $member->{unitsize};
+        if(! is_ref $_[0])
+        {
+          my $index = shift;
+          Carp::croak("$name Negative index on array member") if $index < 0;
+          Carp::croak("$name OOB index on array member") if $index >= $member->{count};
+          $ptr += $index * $member->{unitsize};
+        }
+        elsif(is_plain_arrayref $_[0])
+        {
+          my $array = shift;
+          Carp::croak("$name OOB index on array member") if @$array > $member->{count};
+          my $asize = @$array * $member->{unitsize};
+          $ffi->function( FFI::C::FFI::memcpy_addr() => [ 'opaque', $member->{spec} . "[@{[ scalar @$array ]}]", 'size_t' ] => 'opaque' )
+              ->call($ptr, $array, $asize);
+          my @a;
+          tie @a, 'FFI::C::Struct::MemberArrayTie', $self, $name, $member->{count};
+          return \@a;
+        }
+        else
+        {
+          Carp::croak("$name tried to set element to non-scalar");
+        }
       }
       else
       {
@@ -60,7 +81,6 @@ sub AUTOLOAD
       }
     }
 
-    my $ffi = $self->{def}->ffi;
     if(@_)
     {
       my $src = \$_[0];
