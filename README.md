@@ -1,4 +1,4 @@
-# FFI::C [![Build Status](https://secure.travis-ci.org/Perl5-FFI/FFI-C.png)](http://travis-ci.org/Perl5-FFI/FFI-C) ![windows](https://github.com/Perl5-FFI/FFI-C/workflows/windows/badge.svg) ![macos](https://github.com/Perl5-FFI/FFI-C/workflows/macos/badge.svg)
+# FFI::C [![Build Status](https://travis-ci.org/Perl5-FFI/FFI-C.svg)](http://travis-ci.org/Perl5-FFI/FFI-C) ![windows](https://github.com/Perl5-FFI/FFI-C/workflows/windows/badge.svg) ![macos](https://github.com/Perl5-FFI/FFI-C/workflows/macos/badge.svg)
 
 C data types for FFI
 
@@ -19,7 +19,7 @@ supported.
 - [FFI::C::Struct](https://metacpan.org/pod/FFI::C::Struct)
 - [FFI::C::StructDef](https://metacpan.org/pod/FFI::C::StructDef)
 - [FFI::C::Union](https://metacpan.org/pod/FFI::C::Union)
-- [FFI::C::Union](https://metacpan.org/pod/FFI::C::Union)
+- [FFI::C::UnionDef](https://metacpan.org/pod/FFI::C::UnionDef)
 - [FFI::Platypus::Record](https://metacpan.org/pod/FFI::Platypus::Record)
 
 # AUTHOR
