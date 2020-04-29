@@ -217,6 +217,18 @@ is(
     is($ar->e(1), 2, 'a.get.1 = 2');
     is($ar->e(2), 3, 'a.get.2 = 3');
 
+    is(
+      dies { $ar->e(-1) },
+      match qr/Negative index on array member/,
+      'disallow negative index',
+    );
+
+    is(
+      dies { $ar->e(3) },
+      match qr/OOB index on array member/,
+      'disallow oob index',
+    );
+
     my $c = $ffi->cast('byte_array1_t' => 'value_color_t', $ar);
     is(
       $c,
@@ -251,6 +263,18 @@ is(
     is($ar->e(0), 1, 'a.get.0 = 1');
     is($ar->e(1), 2, 'a.get.1 = 2');
     is($ar->e(2), 3, 'a.get.2 = 3');
+
+    is(
+      dies { $ar->e(-1) },
+      match qr/Negative index on array member/,
+      'disallow negative index',
+    );
+
+    is(
+      dies { $ar->e(3) },
+      match qr/OOB index on array member/,
+      'disallow oob index',
+    );
 
     my $c = $ffi->cast('byte_array2_t' => 'value_color_t', $ar);
     is(

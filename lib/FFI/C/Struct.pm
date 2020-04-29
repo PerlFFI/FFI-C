@@ -46,6 +46,8 @@ sub AUTOLOAD
     if(defined $member->{count})
     {
       my $index = shift;
+      Carp::croak("Negative index on array member") if $index < 0;
+      Carp::croak("OOB index on array member") if $index >= $member->{count};
       $ptr += $index * $member->{unitsize};
     }
 
