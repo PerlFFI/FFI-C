@@ -206,40 +206,80 @@ is(
       ],
     );
 
-    my $ar = $def->create;
-    is($ar->e(0), 0, 'a.get.0 = 0');
-    is($ar->e(1), 0, 'a.get.1 = 0');
-    is($ar->e(2), 0, 'a.get.2 = 0');
-    is($ar->e(0,1), 1, 'a.set.0,1 = 1');
-    is($ar->e(1,2), 2, 'a.set.0,2 = 2');
-    is($ar->e(2,3), 3, 'a.set.0,3 = 3');
-    is($ar->e(0), 1, 'a.get.0 = 1');
-    is($ar->e(1), 2, 'a.get.1 = 2');
-    is($ar->e(2), 3, 'a.get.2 = 3');
+    {
+      my $ar = $def->create;
+      is($ar->e(0), 0, 'a.get.0 = 0');
+      is($ar->e(1), 0, 'a.get.1 = 0');
+      is($ar->e(2), 0, 'a.get.2 = 0');
+      is($ar->e(0,1), 1, 'a.set.0,1 = 1');
+      is($ar->e(1,2), 2, 'a.set.0,2 = 2');
+      is($ar->e(2,3), 3, 'a.set.0,3 = 3');
+      is($ar->e(0), 1, 'a.get.0 = 1');
+      is($ar->e(1), 2, 'a.get.1 = 2');
+      is($ar->e(2), 3, 'a.get.2 = 3');
 
-    is(
-      dies { $ar->e(-1) },
-      match qr/Negative index on array member/,
-      'disallow negative index',
-    );
+      is(
+        dies { $ar->e(-1) },
+        match qr/Negative index on array member/,
+        'disallow negative index',
+      );
 
-    is(
-      dies { $ar->e(3) },
-      match qr/OOB index on array member/,
-      'disallow oob index',
-    );
+      is(
+        dies { $ar->e(3) },
+        match qr/OOB index on array member/,
+        'disallow oob index',
+      );
 
-    my $c = $ffi->cast('byte_array1_t' => 'value_color_t', $ar);
-    is(
-      $c,
-      object {
-        call [ isa => 'Color::Value' ] => T();
-        call red   => 1;
-        call green => 2;
-        call blue  => 3;
-      },
-      'cast from bytes to color worked'
-    );
+      my $c = $ffi->cast('byte_array1_t' => 'value_color_t', $ar);
+      is(
+        $c,
+        object {
+          call [ isa => 'Color::Value' ] => T();
+          call red   => 1;
+          call green => 2;
+          call blue  => 3;
+        },
+        'cast from bytes to color worked'
+      );
+    }
+
+    {
+      my $ar = $def->create;
+      is($ar->e->[0], 0, 'a.get.0 = 0');
+      is($ar->e->[1], 0, 'a.get.1 = 0');
+      is($ar->e->[2], 0, 'a.get.2 = 0');
+      is($ar->e->[0] = 1, 1, 'a.set.0,1 = 1');
+      is($ar->e->[1] = 2, 2, 'a.set.0,2 = 2');
+      is($ar->e->[2] = 3, 3, 'a.set.0,3 = 3');
+      is($ar->e->[0], 1, 'a.get.0 = 1');
+      is($ar->e->[1], 2, 'a.get.1 = 2');
+      is($ar->e->[2], 3, 'a.get.2 = 3');
+      is(scalar @{ $ar->e }, 3, 'a.length = 3');
+
+      is(
+        dies { $ar->e(-1) },
+        match qr/Negative index on array member/,
+        'disallow negative index',
+      );
+
+      is(
+        dies { $ar->e(3) },
+        match qr/OOB index on array member/,
+        'disallow oob index',
+      );
+
+      my $c = $ffi->cast('byte_array1_t' => 'value_color_t', $ar);
+      is(
+        $c,
+        object {
+          call [ isa => 'Color::Value' ] => T();
+          call red   => 1;
+          call green => 2;
+          call blue  => 3;
+        },
+        'cast from bytes to color worked'
+      );
+    }
   }
 
   {
@@ -253,40 +293,80 @@ is(
       ],
     );
 
-    my $ar = Byte::Array2->new;
-    is($ar->e(0), 0, 'a.get.0 = 0');
-    is($ar->e(1), 0, 'a.get.1 = 0');
-    is($ar->e(2), 0, 'a.get.2 = 0');
-    is($ar->e(0,1), 1, 'a.set.0,1 = 1');
-    is($ar->e(1,2), 2, 'a.set.0,2 = 2');
-    is($ar->e(2,3), 3, 'a.set.0,3 = 3');
-    is($ar->e(0), 1, 'a.get.0 = 1');
-    is($ar->e(1), 2, 'a.get.1 = 2');
-    is($ar->e(2), 3, 'a.get.2 = 3');
+    {
+      my $ar = Byte::Array2->new;
+      is($ar->e(0), 0, 'a.get.0 = 0');
+      is($ar->e(1), 0, 'a.get.1 = 0');
+      is($ar->e(2), 0, 'a.get.2 = 0');
+      is($ar->e(0,1), 1, 'a.set.0,1 = 1');
+      is($ar->e(1,2), 2, 'a.set.0,2 = 2');
+      is($ar->e(2,3), 3, 'a.set.0,3 = 3');
+      is($ar->e(0), 1, 'a.get.0 = 1');
+      is($ar->e(1), 2, 'a.get.1 = 2');
+      is($ar->e(2), 3, 'a.get.2 = 3');
 
-    is(
-      dies { $ar->e(-1) },
-      match qr/Negative index on array member/,
-      'disallow negative index',
-    );
+      is(
+        dies { $ar->e(-1) },
+        match qr/Negative index on array member/,
+        'disallow negative index',
+      );
 
-    is(
-      dies { $ar->e(3) },
-      match qr/OOB index on array member/,
-      'disallow oob index',
-    );
+      is(
+        dies { $ar->e(3) },
+        match qr/OOB index on array member/,
+        'disallow oob index',
+      );
 
-    my $c = $ffi->cast('byte_array2_t' => 'value_color_t', $ar);
-    is(
-      $c,
-      object {
-        call [ isa => 'Color::Value' ] => T();
-        call red   => 1;
-        call green => 2;
-        call blue  => 3;
-      },
-      'cast from bytes to color worked'
-    );
+      my $c = $ffi->cast('byte_array2_t' => 'value_color_t', $ar);
+      is(
+        $c,
+        object {
+          call [ isa => 'Color::Value' ] => T();
+          call red   => 1;
+          call green => 2;
+          call blue  => 3;
+        },
+        'cast from bytes to color worked'
+      );
+    }
+
+    {
+      my $ar = Byte::Array2->new;
+      is($ar->e->[0], 0, 'a.get.0 = 0');
+      is($ar->e->[1], 0, 'a.get.1 = 0');
+      is($ar->e->[2], 0, 'a.get.2 = 0');
+      is($ar->e->[0] = 1, 1, 'a.set.0,1 = 1');
+      is($ar->e->[1] = 2, 2, 'a.set.0,2 = 2');
+      is($ar->e->[2] = 3, 3, 'a.set.0,3 = 3');
+      is($ar->e->[0], 1, 'a.get.0 = 1');
+      is($ar->e->[1], 2, 'a.get.1 = 2');
+      is($ar->e->[2], 3, 'a.get.2 = 3');
+      is(scalar @{ $ar->e }, 3, 'a.length = 3');
+
+      is(
+        dies { $ar->e(-1) },
+        match qr/Negative index on array member/,
+        'disallow negative index',
+      );
+
+      is(
+        dies { $ar->e(3) },
+        match qr/OOB index on array member/,
+        'disallow oob index',
+      );
+
+      my $c = $ffi->cast('byte_array2_t' => 'value_color_t', $ar);
+      is(
+        $c,
+        object {
+          call [ isa => 'Color::Value' ] => T();
+          call red   => 1;
+          call green => 2;
+          call blue  => 3;
+        },
+        'cast from bytes to color worked'
+      );
+    }
   }
 
 }

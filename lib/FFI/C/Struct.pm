@@ -46,9 +46,18 @@ sub AUTOLOAD
     if(defined $member->{count})
     {
       my $index = shift;
-      Carp::croak("Negative index on array member") if $index < 0;
-      Carp::croak("OOB index on array member") if $index >= $member->{count};
-      $ptr += $index * $member->{unitsize};
+      if(defined $index)
+      {
+        Carp::croak("Negative index on array member") if $index < 0;
+        Carp::croak("OOB index on array member") if $index >= $member->{count};
+        $ptr += $index * $member->{unitsize};
+      }
+      else
+      {
+        my @a;
+        tie @a, 'FFI::C::Struct::MemberArrayTie', $self, $name, $member->{count};
+        return \@a;
+      }
     }
 
     my $ffi = $self->{def}->ffi;
@@ -80,6 +89,45 @@ sub DESTROY
   {
     FFI::C::FFI::free(delete $self->{ptr});
   }
+}
+
+package FFI::C::Struct::MemberArrayTie;
+
+sub TIEARRAY
+{
+  my($class, $struct, $name, $count) = @_;
+  bless [ $struct, $name, $count ], $class;
+}
+
+sub FETCH
+{
+  my($self, $index) = @_;
+  my($struct, $name) = @$self;
+  $struct->$name($index);
+}
+
+sub STORE
+{
+  my($self, $index, $value) = @_;
+  my($struct, $name) = @$self;
+  $struct->$name($index, $value);
+}
+
+sub FETCHSIZE
+{
+  my($self) = @_;
+  $self->[2];
+}
+
+sub STORESIZE
+{
+  my($self) = @_;
+  $self->[2];
+}
+
+sub CLEAR
+{
+  Carp::croak("Cannot clear");
 }
 
 1;
