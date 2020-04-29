@@ -126,22 +126,24 @@ is(
 
 {
   my $ffi = FFI::Platypus->new( api => 1 );
-  my $vdef;
+
+  my $vdef = FFI::C::StructDef->new(
+    $ffi,
+    name => 'color_value_t',
+    class => 'Color::VarValue',
+    members => [
+      red   => 'uint8',
+      green => 'uint8',
+      blue  => 'uint8',
+    ],
+  );
 
   FFI::C::ArrayDef->new(
     $ffi,
     name => 'color_array_t',
     class => 'Color::VarArray',
     members => [
-      $vdef = FFI::C::StructDef->new(
-        name => 'color_value_t',
-        class => 'Color::VarValue',
-        members => [
-          red   => 'uint8',
-          green => 'uint8',
-          blue  => 'uint8',
-        ],
-      ),
+      'color_value_t',
     ],
   );
 

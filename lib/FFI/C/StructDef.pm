@@ -5,7 +5,7 @@ use warnings;
 use 5.008001;
 use FFI::C::Struct;
 use FFI::C::FFI ();
-use FFI::Platypus 1.11;
+use FFI::Platypus 1.20;
 use Ref::Util qw( is_blessed_ref is_plain_arrayref);
 use Carp ();
 use Sub::Install ();
@@ -90,6 +90,11 @@ sub new
       elsif($name !~ /^[A-Za-z_][A-Za-z_0-9]*$/)
       {
         Carp::croak("Illegal member name");
+      }
+
+      if(my $def = $self->ffi->_def('FFI::C::Def', $spec))
+      {
+        $spec = $def;
       }
 
       if(is_blessed_ref $spec)

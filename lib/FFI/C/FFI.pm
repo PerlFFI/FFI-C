@@ -2,7 +2,7 @@ package FFI::C::FFI;
 
 use strict;
 use warnings;
-use FFI::Platypus 1.11;
+use FFI::Platypus 1.20;
 use base qw( Exporter );
 
 # ABSTRACT: Private module for FFI::C
