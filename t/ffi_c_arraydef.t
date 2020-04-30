@@ -77,6 +77,26 @@ is(
   );
 
   is(
+    Color::Array->new([ { red => 1, green => 2, blue => 3 }, { red => 4, green => 5, blue => 6 }]),
+    object {
+      call [ isa => 'Color::Array' ] => T();
+      call [ get => 0 ] => object {
+        call [ isa => 'Color::Value' ] => T();
+        call red   => 1;
+        call green => 2;
+        call blue  => 3;
+      };
+      call [ get => 1 ] => object {
+        call [ isa => 'Color::Value' ] => T();
+        call red   => 4;
+        call green => 5;
+        call blue  => 6;
+      };
+    },
+    'initalizers',
+  );
+
+  is(
     Color::Array->new,
     object {
       call [ isa => 'Color::Array' ] => T();

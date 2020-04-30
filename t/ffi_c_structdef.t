@@ -184,6 +184,17 @@ is(
     ]
   );
 
+  is(
+    Color::Value->new({ red => 1, green => 2, blue => 3 }),
+    object {
+      call [ isa => 'Color::Value' ] => T();
+      call red => 1;
+      call green => 2;
+      call blue => 3;
+    },
+    'initalizers',
+  );
+
   FFI::C::StructDef->new(
     $ffi,
     name    => 'named_color_t',
