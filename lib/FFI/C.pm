@@ -3,6 +3,11 @@ package FFI::C;
 use strict;
 use warnings;
 use 5.008001;
+use FFI::C::StructDef;
+use FFI::C::UnionDef;
+use FFI::C::ArrayDef;
+use Carp ();
+use Ref::Util qw( is_plain_arrayref );
 
 # ABSTRACT: C data types for FFI
 # VERSION
@@ -105,6 +110,36 @@ In your Perl:
 This distribution provides tools for building classes to interface for common C
 data types.  Arrays, C<struct>, C<union> and nested types based on those are
 supported.
+
+=cut
+
+sub import
+{
+  my(undef, %args) = @_;
+  my($class,$filename) = caller;
+  return if $class eq 'main';
+
+  my $name   = delete $args{name} || (lc($class) . '_t');
+
+  my($def_class, $members, @extra) = map { defined $args{$_} ? ('FFI::C::' . ucfirst($_) . 'Def' => delete $args{$_} ) : () } qw( struct union array );
+  Carp::croak("Specify only one of 'struct', 'union', or 'array'") if @extra;
+
+  $def_class ||= 'FFI::C::StructDef';
+  $members = [] unless defined $members;
+
+  Carp::croak("Members must be an array ref")
+    unless is_plain_arrayref $members;
+
+  Carp::croak("Unknown option keys: " . join(', ', keys %args))
+    if %args;
+
+  $def_class->new(
+    FFI::Platypus->new( api => 1 ),
+    name    => $name,
+    class   => $class,
+    members => $members,
+  );
+}
 
 =head1 SEE ALSO
 
