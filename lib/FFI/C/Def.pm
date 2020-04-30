@@ -7,6 +7,7 @@ use FFI::C::FFI qw( malloc memset );
 use FFI::C::Util;
 use Ref::Util qw( is_blessed_ref is_ref is_plain_hashref );
 use Sub::Install ();
+use Sub::Util ();
 
 # ABSTRACT: Data definition for FFI
 # VERSION
@@ -142,38 +143,41 @@ sub _generate_class
     my $count = $self->{members}->{count};
     my $member_size = $self->{members}->{member}->size;
 
+    my $code = sub {
+      my $class = shift;
+      my($ptr, $owner);
+
+      my $size  = $size;
+      my $count = $count;
+      if(@_ == 1 && !is_ref $_[0])
+      {
+        $count = shift;
+        $size = $member_size * $count;
+      }
+
+      if(@_ == 2 && ! is_ref $_[0])
+      {
+        ($ptr, $owner) = @_;
+      }
+      else
+      {
+        Carp::croak("Cannot create array without knowing the number of elements")
+          unless $size;
+        $ptr = FFI::Platypus::Memory::malloc($size);
+        FFI::Platypus::Memory::memset($ptr, 0, $size);
+      }
+      my $self = bless {
+        ptr   => $ptr,
+        owner => $owner,
+        count => $count,
+      }, $class;
+      FFI::C::Util::init($self, $_[0]) if @_ == 1 && is_ref $_[0];
+      $self;
+    };
+
+    Sub::Util::set_subname(join('::', $self->class, 'new'), $code);
     Sub::Install::install_sub({
-      code => sub {
-        my $class = shift;
-        my($ptr, $owner);
-
-        my $size  = $size;
-        my $count = $count;
-        if(@_ == 1 && !is_ref $_[0])
-        {
-          $count = shift;
-          $size = $member_size * $count;
-        }
-
-        if(@_ == 2 && ! is_ref $_[0])
-        {
-          ($ptr, $owner) = @_;
-        }
-        else
-        {
-          Carp::croak("Cannot create array without knowing the number of elements")
-            unless $size;
-          $ptr = FFI::Platypus::Memory::malloc($size);
-          FFI::Platypus::Memory::memset($ptr, 0, $size);
-        }
-        my $self = bless {
-          ptr   => $ptr,
-          owner => $owner,
-          count => $count,
-        }, $class;
-        FFI::C::Util::init($self, $_[0]) if @_ == 1 && is_ref $_[0];
-        $self;
-      },
+      code => $code,
       into => $self->class,
       as   => 'new',
     });
@@ -182,26 +186,30 @@ sub _generate_class
   {
     my $size = $self->size;
     $size = 1 unless $size > 0;
+
+    my $code =       sub {
+      my $class = shift;
+      my($ptr, $owner);
+      if(@_ == 2 && ! is_ref $_[0])
+      {
+        ($ptr, $owner) = @_;
+      }
+      else
+      {
+        $ptr = FFI::Platypus::Memory::malloc($size);
+        FFI::Platypus::Memory::memset($ptr, 0, $size);
+      }
+      my $self = bless {
+        ptr => $ptr,
+        owner => $owner,
+      }, $class;
+      FFI::C::Util::init($self, $_[0]) if @_ == 1 && is_ref $_[0];
+      $self;
+    };
+
+    Sub::Util::set_subname(join('::', $self->class, 'new'), $code);
     Sub::Install::install_sub({
-      code => sub {
-        my $class = shift;
-        my($ptr, $owner);
-        if(@_ == 2 && ! is_ref $_[0])
-        {
-          ($ptr, $owner) = @_;
-        }
-        else
-        {
-          $ptr = FFI::Platypus::Memory::malloc($size);
-          FFI::Platypus::Memory::memset($ptr, 0, $size);
-        }
-        my $self = bless {
-          ptr => $ptr,
-          owner => $owner,
-        }, $class;
-        FFI::C::Util::init($self, $_[0]) if @_ == 1 && is_ref $_[0];
-        $self;
-      },
+      code => $code,
       into => $self->class,
       as   => 'new',
     });

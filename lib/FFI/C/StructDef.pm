@@ -10,6 +10,7 @@ use FFI::Platypus 1.21;
 use Ref::Util qw( is_blessed_ref is_plain_arrayref is_ref );
 use Carp ();
 use Sub::Install ();
+use Sub::Util ();
 use constant _is_union => 0;
 use base qw( FFI::C::Def );
 
@@ -274,6 +275,7 @@ sub new
           }
         }
 
+        Sub::Util::set_subname(join('::', $self->class, $name), $code);
         Sub::Install::install_sub({
           code => $code,
           into => $self->class,

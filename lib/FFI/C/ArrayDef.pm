@@ -6,6 +6,7 @@ use 5.008001;
 use Ref::Util qw( is_blessed_ref is_ref is_plain_arrayref );
 use FFI::C::Array;
 use Sub::Install ();
+use Sub::Util ();
 use base qw( FFI::C::Def );
 
 # ABSTRACT: Array data definition for FFI
@@ -115,14 +116,16 @@ sub new
     {
       my $member_class = $self->{members}->{member}->class;
       my $member_size  = $self->{members}->{member}->size;
+      my $code = sub {
+        my($self, $index) = @_;
+        Carp::croak("Negative array index") if $index < 0;
+        Carp::croak("OOB array index") if $self->{count} && $index >= $self->{count};
+        my $ptr = $self->{ptr} + $member_size * $index;
+        $member_class->new($ptr,$self);
+      };
+      Sub::Util::set_subname(join('::', $self->class), $code);
       Sub::Install::install_sub({
-        code => sub {
-          my($self, $index) = @_;
-          Carp::croak("Negative array index") if $index < 0;
-          Carp::croak("OOB array index") if $self->{count} && $index >= $self->{count};
-          my $ptr = $self->{ptr} + $member_size * $index;
-          $member_class->new($ptr,$self);
-        },
+        code => $code,
         into => $self->class,
         as   => 'get',
       });
