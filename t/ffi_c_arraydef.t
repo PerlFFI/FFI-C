@@ -16,6 +16,7 @@ is(
     call size  => 80;
     call align => match qr/^[0-9]+$/;
     call name  => 'foo';
+
     call create => object {
       call [ isa => 'FFI::C::Array' ] => T();
       call [ get => 5] => object {
@@ -47,6 +48,12 @@ is(
         end;
       };
     };
+
+    call [ create => [ map { { u64 => $_ * 100 } } (1..10) ] ] => object {
+      call [ isa => 'FFI::C::Array' ] => T();
+      call [ get => $_-1 ] => object { call sub { shift->u64 } => $_*100} for 1..10;
+    };
+
   },
   'simple'
 );

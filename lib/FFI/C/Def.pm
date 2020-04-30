@@ -4,7 +4,8 @@ use strict;
 use warnings;
 use 5.008001;
 use FFI::C::FFI qw( malloc memset );
-use Ref::Util qw( is_blessed_ref is_ref );
+use FFI::C::Util;
+use Ref::Util qw( is_blessed_ref is_ref is_plain_hashref );
 use Sub::Install ();
 
 # ABSTRACT: Data definition for FFI
@@ -296,11 +297,15 @@ sub create
   my $class = ref($self);
   $class =~ s/Def$//;
 
-  bless {
+  my $inst = bless {
     ptr   => $ptr,
     def   => $self,
     owner => $owner,
   }, $class;
+
+  FFI::C::Util::init($inst, $_[0]) if @_ == 1 && is_plain_hashref $_[0];
+
+  $inst;
 }
 
 package FFI::Platypus::Type::CDef;

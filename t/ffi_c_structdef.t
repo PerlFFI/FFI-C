@@ -140,6 +140,23 @@ is(
 
 is(
   FFI::C::StructDef->new( members => [
+    foo => 'uint8',
+    bar => FFI::C::StructDef->new( members => [
+      baz => 'sint32',
+    ]),
+  ]),
+  object {
+    call [ isa => 'FFI::C::StructDef' ] => T();
+    call [ create => { foo => 200, bar => { baz => -9999 } } ] => object {
+      call sub { shift->foo             } => 200;
+      call sub { shift->bar->baz        } => -9999;
+    },
+  },
+  'nested'
+);
+
+is(
+  FFI::C::StructDef->new( members => [
     foo => 'string(10)',
   ]),
   object {
