@@ -29,10 +29,14 @@ my $rect_def = FFI::C::ArrayDef->new(
 
 $ffi->attach( print_rectangle => ['rectangle_t'] );
 
-my $rect = Rectangle->new;
-$rect->[0]->x(1.5);
-$rect->[0]->y(2.0);
-$rect->[1]->x(3.14);
-$rect->[1]->y(11.0);
+my $rect = Rectangle->new([
+  { x => 1.5,  y => 2.0  },
+  { x => 3.14, y => 11.0 },
+]);
 
 print_rectangle($rect);  # [[1.5 2] [3.14 11]]
+
+# move rectangle on the y axis
+$rect->[$_]->y( $rect->[$_]->y + 1.0 ) for 0..1;
+
+print_rectangle($rect);  # [[1.5 3] [3.14 12]]
