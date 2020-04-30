@@ -146,11 +146,15 @@ sub new
  my $instance = $def->class->new;          # if class was specified
  my $instance = $def->create($count);
  my $instance = $def->class->new($count);  # if class was specified
+ my $instance = $def->create(\@init);
+ my $instance = $def->class->new(\@init);  # if class was specified
 
 This creates an instance of the array.  If C<$count> is given, this
 is used for the element count, possibly overriding what was specified
 when the def was created.  If the def doesn't have an element count
 specified, then you MUST provide it here.  Returns a L<FFI::C::Array>.
+
+You can optionally initialize member values using C<@init>.
 
 =cut
 
