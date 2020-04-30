@@ -26,6 +26,11 @@ jobs:
     - env: CIP_TAG=5.12
     - env: CIP_TAG=5.10
     - env: CIP_TAG=5.8
+
+branches:
+  only:
+    - master
+
 cache:
   directories:
     - "$HOME/.cip"
