@@ -4,10 +4,12 @@ use strict;
 use warnings;
 use 5.008001;
 use Ref::Util qw( is_blessed_ref is_plain_arrayref is_plain_hashref is_ref );
+use Sub::Identify ();
 use Carp ();
+use Class::Inspector;
 use base qw( Exporter );
 
-our @EXPORT_OK = qw( init take owned );
+our @EXPORT_OK = qw( init c_to_perl take owned );
 
 # ABSTRACT: Utility functions for dealing with structured C data
 # VERSION
@@ -32,14 +34,14 @@ This function initializes the members of an instance.
 
 =cut
 
-sub init
+sub init ($$)
 {
   my($inst, $values) = @_;
   if(is_blessed_ref $inst && $inst->isa('FFI::C::Array'))
   {
     Carp::croak("Tried to initalize a @{[ ref $inst ]} with something other than an array reference")
       unless is_plain_arrayref $values;
-    init($inst->get($_), $values->[$_]) for 0..$#$values;
+    &init($inst->get($_), $values->[$_]) for 0..$#$values;
   }
   elsif(is_blessed_ref $inst)
   {
@@ -54,6 +56,61 @@ sub init
   else
   {
     Carp::croak("Not an object");
+  }
+}
+
+=head2 c_to_perl
+
+ my $perl = c_to_perl $instance;
+
+This function takes an instance and returns the nested members as Perl data structures.
+
+=cut
+
+sub c_to_perl ($)
+{
+  my $inst = shift;
+  Carp::croak("Not an object") unless is_blessed_ref($inst);
+  if($inst->isa("FFI::C::Array"))
+  {
+    return [map { &c_to_perl($_) } @$inst]
+  }
+  elsif($inst->isa("FFI::C::Struct"))
+  {
+    my $def = $inst->{def};
+
+    my %h;
+    foreach my $key (keys %{ $def->{members} })
+    {
+      next if $key =~ /^:/;
+      my $value = $inst->$key;
+      $value = &c_to_perl($value) if is_blessed_ref $value;
+      $value = [@$value] if is_plain_arrayref $value;
+      $h{$key} = $value;
+    }
+
+    return \%h;
+  }
+  else
+  {
+    my %h;
+    my $df = $INC{'FFI/C/StructDef.pm'};
+    foreach my $key (@{ Class::Inspector->methods(ref $inst) })
+    {
+      next if $key =~ /^(new|DESTROY)$/;
+
+      # we only want to recurse on generated methods.
+      my ($file) = Sub::Identify::get_code_location( $inst->can($key) );
+      next unless $file eq $df;
+
+      # get the value;
+      my $value = $inst->$key;
+      $value = &c_to_perl($value) if is_blessed_ref $value;
+      $value = [@$value] if is_plain_arrayref $value;
+      $h{$key} = $value;
+    }
+
+    return \%h;
   }
 }
 
@@ -77,7 +134,7 @@ Reasons an instance might not be owned are:
 
 =cut
 
-sub owned
+sub owned ($)
 {
   my $inst = shift;
   !!($inst->{ptr} && !$inst->{owner});

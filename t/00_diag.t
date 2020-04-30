@@ -10,12 +10,15 @@ my %modules;
 my $post_diag;
 
 $modules{$_} = $_ for qw(
+  Class::Inspector
   ExtUtils::MakeMaker
   FFI::Platypus
   FFI::Platypus::Memory
   FFI::Platypus::Record
   Ref::Util
+  Sub::Identify
   Sub::Install
+  Sub::Util
   Test2::V0
 );
 
