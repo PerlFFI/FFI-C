@@ -293,9 +293,13 @@ sub new
 =head2 create
 
  my $instance = $def->create;
- my $instance = $def->class->new;  # if class was specified
+ my $instance = $def->class->new;          # if class was specified
+ my $instance = $def->create(\%init);
+ my $instance = $def->class->new(\%init);  # if class was specified
 
 This creates an instance of the C<struct>, returns a L<FFI::C::Struct>.
+
+You can optionally initialize member values using C<%init>.
 
 =head1 SEE ALSO
 
