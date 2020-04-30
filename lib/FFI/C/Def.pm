@@ -166,11 +166,13 @@ sub _generate_class
           $ptr = FFI::Platypus::Memory::malloc($size);
           FFI::Platypus::Memory::memset($ptr, 0, $size);
         }
-        bless {
+        my $self = bless {
           ptr   => $ptr,
           owner => $owner,
           count => $count,
         }, $class;
+        FFI::C::Util::init($self, $_[0]) if @_ == 1 && is_ref $_[0];
+        $self;
       },
       into => $self->class,
       as   => 'new',
@@ -193,10 +195,12 @@ sub _generate_class
           $ptr = FFI::Platypus::Memory::malloc($size);
           FFI::Platypus::Memory::memset($ptr, 0, $size);
         }
-        bless {
+        my $self = bless {
           ptr => $ptr,
           owner => $owner,
         }, $class;
+        FFI::C::Util::init($self, $_[0]) if @_ == 1 && is_ref $_[0];
+        $self;
       },
       into => $self->class,
       as   => 'new',
