@@ -1,5 +1,5 @@
 use Test2::V0 -no_srand => 1;
-use FFI::Platypus 1.00;
+use FFI::Platypus 1.21;
 use FFI::C::StructDef;
 use FFI::C::Struct;
 
