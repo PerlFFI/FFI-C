@@ -18,17 +18,16 @@ my $def = FFI::C::StructDef->new(
   ],
 );
 
-my $red = Color->new;
-$red->red(255);
-$red->green(0);
-$red->blue(0);
+my $red = Color->new({ red => 255 });
 
-my $green = Color->new;
-$green->red(0);
-$green->green(255);
-$green->blue(0);
+my $green = Color->new({ green => 255 });
 
 $ffi->attach( print_color => ['color_t'] );
 
 print_color($red);   # [ff 00 00]
 print_color($green); # [00 ff 00]
+
+# that red is a tad bright!
+$red->red( 200 );
+
+print_color($red);   # [c8 00 00]

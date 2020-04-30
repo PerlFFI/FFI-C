@@ -12,6 +12,5 @@ my $def = FFI::C::UnionDef->new(
   ],
 );
 
-my $int = AnyInt->new;
-$int->u8(42);
+my $int = AnyInt->new({ u8 => 42 });
 printf "0x%x\n", $int->u32;   # 0x2a on Intel

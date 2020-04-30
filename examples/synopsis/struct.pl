@@ -12,16 +12,16 @@ my $def = FFI::C::StructDef->new(
   ],
 );
 
-my $red = $def->create;  # creates a FFI::C::Stuct
-$red->red(255);
-$red->green(0);
-$red->blue(0);
+my $red = $def->create({ red => 255 });    # creates a FFI::C::Stuct
 
 printf "[%02x %02x %02x]\n", $red->red, $red->green, $red->blue;  # [ff 00 00]
 
-my $green = Color->new;  # creates a FFI::C::Stuct
-$green->red(0);
-$green->green(255);
-$green->blue(0);
+# that red is too bright!
+$red->red(200);
+
+printf "[%02x %02x %02x]\n", $red->red, $red->green, $red->blue;  # [c8 00 00]
+
+
+my $green = Color->new({ green => 255 });  # creates a FFI::C::Stuct
 
 printf "[%02x %02x %02x]\n", $green->red, $green->green, $green->blue;  # [00 ff 00]
