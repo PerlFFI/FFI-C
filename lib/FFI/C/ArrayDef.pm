@@ -3,7 +3,7 @@ package FFI::C::ArrayDef;
 use strict;
 use warnings;
 use 5.008001;
-use Ref::Util qw( is_blessed_ref is_ref );
+use Ref::Util qw( is_blessed_ref is_ref is_plain_arrayref );
 use FFI::C::Array;
 use Sub::Install ();
 use base qw( FFI::C::Def );
@@ -156,7 +156,7 @@ specified, then you MUST provide it here.  Returns a L<FFI::C::Array>.
 
 sub create
 {
-  my($self) = @_;
+  my $self = shift;
 
   return $self->class->new(@_) if $self->class;
 
@@ -172,6 +172,7 @@ sub create
   {
     my $array = $self->SUPER::create(@_);
     $array->{count} = $count;
+    FFI::C::Util::init($array, $_[0]) if @_ == 1 && is_plain_arrayref $_[0];
     return $array;
   }
 
