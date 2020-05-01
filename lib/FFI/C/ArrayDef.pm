@@ -81,7 +81,7 @@ sub new
     Carp::croak("The members argument should be a struct/union type and an optional element count");
   }
 
-  if(my $def = $self->ffi->_def('FFI::C::Def', $member))
+  if(my $def = $self->ffi->def('FFI::C::Def', $member))
   {
     $member = $def;
   }
