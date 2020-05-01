@@ -56,9 +56,7 @@ in the order that they will be stored in the struct.
 sub _is_kind
 {
   my($self, $name, $want) = @_;
-  my $method = $self->ffi->can('kindof') || $self->ffi->can('_kindof');
-  die "The platypus you are using doesn't support kindof method" unless $method;
-  my $kind = eval { $self->ffi->$method($name) };
+  my $kind = eval { $self->ffi->kindof($name) };
   return undef unless defined $kind;
   return $kind eq $want;
 }
@@ -100,7 +98,7 @@ sub new
         Carp::croak("new now allowed as a member name");
       }
 
-      if(my $def = $self->ffi->_def('FFI::C::Def', $spec))
+      if(my $def = $self->ffi->def('FFI::C::Def', $spec))
       {
         $spec = $def;
       }
@@ -122,8 +120,8 @@ sub new
       }
       elsif($self->_is_kind($spec, 'array'))
       {
-        $member{spec}     = $self->ffi->_unitof($spec);
-        $member{count}    = $self->ffi->_countof($spec);
+        $member{spec}     = $self->ffi->unitof($spec);
+        $member{count}    = $self->ffi->countof($spec);
         $member{size}     = $self->ffi->sizeof($spec);
         $member{unitsize} = $self->ffi->sizeof($member{spec});
         $member{align}    = $self->ffi->alignof($spec);

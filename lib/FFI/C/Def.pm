@@ -103,7 +103,7 @@ sub new
       def   => $self,
       cdef  => $cdef,
     );
-    $ffi->_def('FFI::C::Def', $self->name, $self);
+    $ffi->def('FFI::C::Def', $self->name, $self);
   }
 
   $self;
