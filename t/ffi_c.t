@@ -40,4 +40,14 @@ is(
   'create generated union class'
 );
 
+{ package Null;
+  use FFI::C;
+}
+
+is(
+  Null->can('new'),
+  F(),
+  'null specification does not generate class',
+);
+
 done_testing;

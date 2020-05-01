@@ -124,8 +124,7 @@ sub import
   my($def_class, $members, @extra) = map { defined $args{$_} ? ('FFI::C::' . ucfirst($_) . 'Def' => delete $args{$_} ) : () } qw( struct union array );
   Carp::croak("Specify only one of 'struct', 'union', or 'array'") if @extra;
 
-  $def_class ||= 'FFI::C::StructDef';
-  $members = [] unless defined $members;
+  return unless defined $def_class && defined $members;
 
   Carp::croak("Members must be an array ref")
     unless is_plain_arrayref $members;
