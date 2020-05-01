@@ -2,6 +2,7 @@
 
 set -ex
 
+cpanm --reinstall Alien::FFI
 cd $(mktemp -d)
 curl -L https://github.com/Perl5-FFI/FFI-Platypus/tarball/master | tar zxf -
 cd $(ls -1)
