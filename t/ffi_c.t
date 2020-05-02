@@ -75,4 +75,69 @@ subtest 'example' => sub {
 
 };
 
+subtest 'with type name' => sub {
+
+  { package ColorValue1;
+    FFI::C->struct( color_value_t => [
+      red   => 'uint8',
+      green => 'uint8',
+      blue  => 'uint8',
+    ]);
+  }
+
+  { package NamedColor1;
+    FFI::C->struct( named_color_t => [
+      name  => 'string(22)',
+      value => 'color_value_t',
+    ]);
+  }
+
+  { package ArrayNamedColor1;
+    FFI::C->array(array_named_color_t => ['named_color_t' => 4]);
+  };
+
+  is(
+    c_to_perl(ArrayNamedColor1->new([
+      { name => "red",    value => { red   => 255 } },
+      { name => "green",  value => { green => 255 } },
+      { name => "blue",   value => { blue  => 255 } },
+      { name => "purple", value => { red   => 255,
+                                     blue  => 255 } },
+    ])),
+    [
+      { name => match qr/^red\0+$/,
+        value => { red => 255, blue => 0, green => 0 } },
+      { name => match qr/^green\0+$/,
+        value => { red => 0, blue => 0, green => 255 } },
+      { name => match qr/^blue\0+$/,
+        value => { red => 0, blue => 255, green => 0 } },
+      { name => match qr/^purple\0+$/,
+        value => { red => 255, blue => 255, green => 0 } },
+    ],
+    'create instance array + struct',
+  );
+
+  { package AnyInt1;
+    FFI::C->union(any_int_t => [
+      u8  => 'uint8',
+      u16 => 'uint16',
+      u32 => 'uint32',
+      u64 => 'uint64',
+    ]);
+  }
+
+  is(
+    c_to_perl(AnyInt1->new({ u8 => 42 })),
+    hash {
+      field u8 => 42;
+      field u16 => match qr/^[0-9]+$/;
+      field u32 => match qr/^[0-9]+$/;
+      field u64 => match qr/^[0-9]+$/;
+      end;
+    },
+    'create instance union'
+  );
+
+};
+
 done_testing;

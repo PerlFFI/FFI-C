@@ -138,11 +138,11 @@ sub new
         $member{size}   = $self->ffi->sizeof("$spec*");
         local $@;
         $member{align}  = eval { $self->ffi->alignof("$spec*") };
-        Carp::croak("FFI-C doesn't support $spec for struct or union members") if $@;
+        Carp::croak("undefined, or unsupported type: $spec") if $@;
       }
       else
       {
-        Carp::croak("FFI-C doesn't support $spec for struct or union members");
+        Carp::croak("undefined or unsupported type: $spec");
       }
 
       $self->{align} = $member{align} if $member{align} > $self->{align};
