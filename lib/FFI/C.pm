@@ -165,6 +165,12 @@ sub array
   goto &_gen;
 }
 
+=head1 EXAMPLES
+
+=head2 unix time struct
+
+# EXAMPLE: examples/time.pl
+
 =head1 CAVEATS
 
 L<FFI::C> objects must be passed into C via L<FFI::Platypus> by pointers.
