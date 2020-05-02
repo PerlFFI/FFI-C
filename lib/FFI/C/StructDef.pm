@@ -197,7 +197,7 @@ sub new
             my $self = shift;
             my $ptr = $self->{ptr} + $offset;
             my $m = $class->new($ptr,$self);
-            FFI::C::Util::init($m, $_[0]) if @_;
+            FFI::C::Util::perl_to_c($m, $_[0]) if @_;
             $m;
           };
         }

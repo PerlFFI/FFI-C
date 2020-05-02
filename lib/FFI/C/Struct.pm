@@ -46,7 +46,7 @@ sub AUTOLOAD
     if($member->{nest})
     {
       my $m = $member->{nest}->create($ptr,$self->{owner} || $self);
-      FFI::C::Util::init($m, $_[0]) if @_;
+      FFI::C::Util::perl_to_c($m, $_[0]) if @_;
       return $m;
     }
 

@@ -9,7 +9,7 @@ use Carp ();
 use Class::Inspector;
 use base qw( Exporter );
 
-our @EXPORT_OK = qw( init c_to_perl take owned );
+our @EXPORT_OK = qw( perl_to_c c_to_perl take owned );
 
 # ABSTRACT: Utility functions for dealing with structured C data
 # VERSION
@@ -25,23 +25,23 @@ the various def instances provided by L<FFI::C>
 
 =head1 FUNCTIONS
 
-=head2 init
+=head2 perl_to_c
 
- init $instance, \%values;  # for Struct/Union
- init $instance, \@values;  # for Array
+ perl_to_c $instance, \%values;  # for Struct/Union
+ perl_to_c $instance, \@values;  # for Array
 
 This function initializes the members of an instance.
 
 =cut
 
-sub init ($$)
+sub perl_to_c ($$)
 {
   my($inst, $values) = @_;
   if(is_blessed_ref $inst && $inst->isa('FFI::C::Array'))
   {
     Carp::croak("Tried to initalize a @{[ ref $inst ]} with something other than an array reference")
       unless is_plain_arrayref $values;
-    &init($inst->get($_), $values->[$_]) for 0..$#$values;
+    &perl_to_c($inst->get($_), $values->[$_]) for 0..$#$values;
   }
   elsif(is_blessed_ref $inst)
   {
