@@ -1,5 +1,5 @@
 use Test2::V0 -no_srand => 1;
-use FFI::Platypus 1.21;
+use FFI::Platypus 1.24;
 use FFI::Platypus::Memory qw( malloc );
 use FFI::Platypus::Record;
 use FFI::C::StructDef;

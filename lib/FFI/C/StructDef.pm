@@ -6,7 +6,7 @@ use 5.008001;
 use FFI::C::Util;
 use FFI::C::Struct;
 use FFI::C::FFI ();
-use FFI::Platypus 1.21;
+use FFI::Platypus 1.24;
 use Ref::Util qw( is_blessed_ref is_plain_arrayref is_ref );
 use Carp ();
 use Sub::Install ();
