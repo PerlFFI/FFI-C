@@ -40,12 +40,17 @@ is(
 
 foreach my $example (map { bsd_glob "$_/*.pl" } @dirs)
 {
-  my $out = '';
-  my $err = '';
-  script_compiles $example;
-  script_runs $example, { stdout => \$out, stderr => \$err };
-  note "[out]\n$out" if $out ne '';
-  note "[err]\n$err" if $err ne '';
+  my $basename = path($example)->basename;
+  subtest $basename => sub {
+    skip_all 'test requires Perl 5.14 or better'
+      unless $basename ne 'c.pl' || $] >= 5.014;
+    my $out = '';
+    my $err = '';
+    script_compiles $example;
+    script_runs $example, { stdout => \$out, stderr => \$err };
+    note "[out]\n$out" if $out ne '';
+    note "[err]\n$err" if $err ne '';
+  };
 }
 
 done_testing;

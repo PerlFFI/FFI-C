@@ -27,20 +27,25 @@ is(
   'FFI::C->ffi can call get as many times as we like',
 );
 
-{
-  my($out, $ret) = capture_merged {
-    require './examples/synopsis/c.pl';
-  };
-  is $ret, T(), 'example compiles';
-  note $out;
-}
+subtest 'example' => sub {
 
-my $array = ArrayNamedColor->new([
-  { name => "red",    value => { red   => 255 } },
-  { name => "green",  value => { green => 255 } },
-  { name => "blue",   value => { blue  => 255 } },
-  { name => "purple", value => { red   => 255,
-                                 blue  => 255 } },
-]);
+  skip_all 'test requires Perl 5.14 or better' unless $] >= 5.014;
+
+  {
+    my($out, $ret) = capture_merged {
+        require './examples/synopsis/c.pl';
+    };
+    is $ret, T(), 'example compiles';
+    note $out;
+  }
+
+  my $array = ArrayNamedColor->new([
+    { name => "red",    value => { red   => 255 } },
+    { name => "green",  value => { green => 255 } },
+    { name => "blue",   value => { blue  => 255 } },
+    { name => "purple", value => { red   => 255,
+                                   blue  => 255 } },
+  ]);
+};
 
 done_testing;
