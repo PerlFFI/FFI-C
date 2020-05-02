@@ -1,5 +1,6 @@
 use Test2::V0 -no_srand => 1;
 use FFI::C;
+use FFI::C::Util qw( c_to_perl );
 use FFI::Platypus;
 use Capture::Tiny qw( capture_merged );
 
@@ -39,13 +40,39 @@ subtest 'example' => sub {
     note $out;
   }
 
-  my $array = ArrayNamedColor->new([
-    { name => "red",    value => { red   => 255 } },
-    { name => "green",  value => { green => 255 } },
-    { name => "blue",   value => { blue  => 255 } },
-    { name => "purple", value => { red   => 255,
-                                   blue  => 255 } },
-  ]);
+  is(
+    c_to_perl(ArrayNamedColor->new([
+      { name => "red",    value => { red   => 255 } },
+      { name => "green",  value => { green => 255 } },
+      { name => "blue",   value => { blue  => 255 } },
+      { name => "purple", value => { red   => 255,
+                                     blue  => 255 } },
+    ])),
+    [
+      { name => match qr/^red\0+$/,
+        value => { red => 255, blue => 0, green => 0 } },
+      { name => match qr/^green\0+$/,
+        value => { red => 0, blue => 0, green => 255 } },
+      { name => match qr/^blue\0+$/,
+        value => { red => 0, blue => 255, green => 0 } },
+      { name => match qr/^purple\0+$/,
+        value => { red => 255, blue => 255, green => 0 } },
+    ],
+    'create instance array + struct',
+  );
+
+  is(
+    c_to_perl(AnyInt->new({ u8 => 42 })),
+    hash {
+      field u8 => 42;
+      field u16 => match qr/^[0-9]+$/;
+      field u32 => match qr/^[0-9]+$/;
+      field u64 => match qr/^[0-9]+$/;
+      end;
+    },
+    'create instance union'
+  );
+
 };
 
 done_testing;
