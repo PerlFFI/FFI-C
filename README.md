@@ -161,6 +161,12 @@ generated.  For an array you give it the member type and the element count.
 The element count is optional for variable length arrays, but keep in mind
 that when you create such an array you do need to provide a size.
 
+# CAVEATS
+
+[FFI::C](https://metacpan.org/pod/FFI::C) objects must be passed into C via [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) by pointers.
+So-called "pass-by-value" is not and will not be supported.  For
+"pass-by-value" record types, you should instead use [FFI::Platypus::Record](https://metacpan.org/pod/FFI::Platypus::Record).
+
 # SEE ALSO
 
 - [FFI::C](https://metacpan.org/pod/FFI::C)
