@@ -409,4 +409,18 @@ is(
 
 }
 
+is(
+  dies {
+    my $ffi = FFI::Platypus->new( api => 1 );
+    FFI::C::StructDef->new(
+      name => 'self_nest_t',
+      members => [
+        self => 'self_nest_t',
+      ],
+    );
+  },
+  match qr/Canot nest a struct or union def inside of itself/,
+  'Canot nest a struct or union def inside of itself',
+);
+
 done_testing;

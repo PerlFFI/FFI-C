@@ -11,6 +11,7 @@ use Ref::Util qw( is_blessed_ref is_plain_arrayref is_ref );
 use Carp ();
 use Sub::Install ();
 use Sub::Util ();
+use Scalar::Util qw( refaddr );
 use constant _is_union => 0;
 use base qw( FFI::C::Def );
 
@@ -107,6 +108,8 @@ sub new
       {
         if($spec->isa('FFI::C::Def'))
         {
+          Carp::croak("Canot nest a struct or union def inside of itself")
+            if refaddr($spec) == refaddr($self);
           $member{nest}  = $spec;
           $member{size}  = $spec->size;
           $member{align} = $spec->align;
