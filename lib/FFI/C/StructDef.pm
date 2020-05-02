@@ -14,7 +14,7 @@ use Sub::Util ();
 use constant _is_union => 0;
 use base qw( FFI::C::Def );
 
-our @CARP_NOT = qw( FFI::C::Util );
+our @CARP_NOT = qw( FFI::C::Util FFI::C );
 
 # ABSTRACT: Structured data definition for FFI
 # VERSION

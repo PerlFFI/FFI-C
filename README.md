@@ -51,7 +51,7 @@ package NamedColor {
 }
 
 package ArrayNamedColor {
-  FFI::C->array(['array_named_color_t' => 4]);
+  FFI::C->array(['named_color_t' => 4]);
 };
 
 my $array = ArrayNamedColor->new([

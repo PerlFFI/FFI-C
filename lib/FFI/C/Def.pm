@@ -9,6 +9,8 @@ use Ref::Util qw( is_blessed_ref is_ref is_plain_hashref );
 use Sub::Install ();
 use Sub::Util ();
 
+our @CARP_NOT = qw( FFI::C );
+
 # ABSTRACT: Data definition for FFI
 # VERSION
 
