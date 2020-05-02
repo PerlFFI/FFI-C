@@ -1,5 +1,5 @@
 use Test2::V0 -no_srand => 1;
-use FFI::C::Util qw( owned take init c_to_perl );
+use FFI::C::Util qw( owned take perl_to_c c_to_perl );
 use FFI::Platypus::Memory qw( free );
 use FFI::C::StructDef;
 use FFI::C::UnionDef;
@@ -46,9 +46,9 @@ subtest 'owned / take' => sub {
 
 };
 
-subtest 'init / c_to_perl' => sub {
+subtest 'perl_to_c / c_to_perl' => sub {
 
-  imported_ok 'init';
+  imported_ok 'perl_to_c';
   imported_ok 'c_to_perl';
 
   subtest 'generated classes' => sub {
@@ -83,7 +83,7 @@ subtest 'init / c_to_perl' => sub {
     );
 
     my $inst = $def->create;
-    init($inst, {
+    perl_to_c($inst, {
       x => 1,
       y => [
         { foo => 2, bar => 3, baz => 5.5 },
@@ -112,7 +112,7 @@ subtest 'init / c_to_perl' => sub {
           call u16 => 900;
         };
       },
-      'values initalized',
+      'value converted to c',
     );
 
     { no warnings 'once';
@@ -167,7 +167,7 @@ subtest 'init / c_to_perl' => sub {
     );
 
     my $inst = $def->create;
-    init($inst, {
+    perl_to_c($inst, {
       x => 1,
       y => [
         { foo => 2, bar => 3, baz => 5.5 },

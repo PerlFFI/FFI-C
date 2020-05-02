@@ -173,7 +173,7 @@ sub _generate_class
         owner => $owner,
         count => $count,
       }, $class;
-      FFI::C::Util::init($self, $_[0]) if @_ == 1 && is_ref $_[0];
+      FFI::C::Util::perl_to_c($self, $_[0]) if @_ == 1 && is_ref $_[0];
       $self;
     };
 
@@ -205,7 +205,7 @@ sub _generate_class
         ptr => $ptr,
         owner => $owner,
       }, $class;
-      FFI::C::Util::init($self, $_[0]) if @_ == 1 && is_ref $_[0];
+      FFI::C::Util::perl_to_c($self, $_[0]) if @_ == 1 && is_ref $_[0];
       $self;
     };
 
@@ -317,7 +317,7 @@ sub create
     owner => $owner,
   }, $class;
 
-  FFI::C::Util::init($inst, $_[0]) if @_ == 1 && is_plain_hashref $_[0];
+  FFI::C::Util::perl_to_c($inst, $_[0]) if @_ == 1 && is_plain_hashref $_[0];
 
   $inst;
 }

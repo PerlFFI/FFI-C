@@ -35,4 +35,12 @@ is(
   note $out;
 }
 
+my $array = ArrayNamedColor->new([
+  { name => "red",    value => { red   => 255 } },
+  { name => "green",  value => { green => 255 } },
+  { name => "blue",   value => { blue  => 255 } },
+  { name => "purple", value => { red   => 255,
+                                 blue  => 255 } },
+]);
+
 done_testing;

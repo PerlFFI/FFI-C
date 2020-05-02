@@ -184,7 +184,7 @@ sub create
   {
     my $array = $self->SUPER::create(@_);
     $array->{count} = $count;
-    FFI::C::Util::init($array, $_[0]) if @_ == 1 && is_plain_arrayref $_[0];
+    FFI::C::Util::perl_to_c($array, $_[0]) if @_ == 1 && is_plain_arrayref $_[0];
     return $array;
   }
 
