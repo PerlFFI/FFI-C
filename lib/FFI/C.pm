@@ -165,6 +165,12 @@ sub array
   goto &_gen;
 }
 
+=head1 CAVEATS
+
+L<FFI::C> objects must be passed into C via L<FFI::Platypus> by pointers.
+So-called "pass-by-value" is not and will not be supported.  For
+"pass-by-value" record types, you should instead use L<FFI::Platypus::Record>.
+
 =head1 SEE ALSO
 
 =over 4
