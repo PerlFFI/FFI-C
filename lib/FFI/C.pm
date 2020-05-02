@@ -139,7 +139,7 @@ L<FFI::C::Union> class is generated instead.
 
 sub union
 {
-  require FFI::C::StructDef;
+  require FFI::C::UnionDef;
   $def_class = 'FFI::C::UnionDef';
   goto &_gen;
 }

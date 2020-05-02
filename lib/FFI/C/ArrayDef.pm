@@ -7,7 +7,10 @@ use Ref::Util qw( is_blessed_ref is_ref is_plain_arrayref );
 use FFI::C::Array;
 use Sub::Install ();
 use Sub::Util ();
+use Scalar::Util qw( refaddr );
 use base qw( FFI::C::Def );
+
+our @CARP_NOT = qw( FFI::C );
 
 # ABSTRACT: Array data definition for FFI
 # VERSION
@@ -85,6 +88,8 @@ sub new
   {
     $member = $def;
   }
+
+  Carp::croak("Canot nest an array def inside of itself") if refaddr($member) == refaddr($self);
 
   Carp::croak("Illegal member")
     unless defined $member && is_blessed_ref($member) && $member->isa("FFI::C::Def");
