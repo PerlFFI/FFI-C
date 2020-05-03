@@ -110,6 +110,14 @@ sub AUTOLOAD
   }
 }
 
+sub can
+{
+  my($self, $name) = @_;
+  $self->{def}->{members}->{$name}
+    ? sub { shift->$name(@_) }
+    : $self->SUPER::can($name);
+}
+
 sub DESTROY
 {
   my($self) = @_;

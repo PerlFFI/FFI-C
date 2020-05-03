@@ -40,7 +40,7 @@ subtest 'basic' => sub {
     },
     object {
       call [ isa => 'FFI::C::Union' ] => T();
-      call sub { shift->bar } => -47;
+      call bar => -47;
       field owner => 1;
       field def => object {
         call [ isa => 'FFI::C::UnionDef' ] => T();

@@ -43,8 +43,8 @@ subtest 'basic' => sub {
     },
     object {
       call [ isa => 'FFI::C::Struct' ] => T();
-      call sub { shift->bar } => -47;
-      call sub { shift->baz } => 199;
+      call bar => -47;
+      call baz => 199;
       field owner => 1;
       field def => object {
         call [ isa => 'FFI::C::StructDef' ] => T();

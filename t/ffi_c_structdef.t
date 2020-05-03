@@ -92,26 +92,26 @@ is(
     call [ isa => 'FFI::C::StructDef' ] => T();
     call create => object {
       call [ isa => 'FFI::C::Struct' ] => T();
-      call sub { shift->foo         } => 0;
-      call sub { shift->bar         } => 0;
-      call sub { shift->baz         } => 0;
-      call sub { shift->roger       } => U();
-      call sub { shift->foo(22)     } => 22;
-      call sub { shift->bar(1900)   } => 1900;
-      call sub { shift->baz(-500)   } => -500;
-      call sub { shift->roger($ptr) } => $ptr;
-      call sub { shift->foo         } => 22;
-      call sub { shift->bar         } => 1900;
-      call sub { shift->baz         } => -500;
-      call sub { shift->roger       } => $ptr;
+      call foo                => 0;
+      call bar                => 0;
+      call baz                => 0;
+      call roger              => U();
+      call [ foo => 22 ]      => 22;
+      call [ bar => 1900 ]    => 1900;
+      call [ baz => -500 ]    => -500;
+      call [ roger => $ptr ]  => $ptr;
+      call foo                => 22;
+      call bar                => 1900;
+      call baz                => -500;
+      call roger              => $ptr;
       call sub { record(shift, qw( uint8 foo uint32 bar sint64 baz opaque roger ) ) } => object {
         call foo   =>   22;
         call bar   => 1900;
         call baz   => -500;
         call roger => $ptr;
       };
-      call sub { shift->roger(undef) } => U();
-      call sub { shift->roger        } => U();
+      call [ roger => undef ] => U();
+      call roger              => U();
     };
   },
   'with members',
@@ -127,12 +127,18 @@ is(
   object {
     call [ isa => 'FFI::C::StructDef' ] => T();
     call create => object {
-      call sub { shift->foo             } => 0;
-      call sub { shift->bar->baz        } => 0;
-      call sub { shift->foo(200)        } => 200;
-      call sub { shift->bar->baz(-9999) } => -9999;
-      call sub { shift->foo             } => 200;
-      call sub { shift->bar->baz        } => -9999;
+      call foo               => 0;
+      call bar => object {
+        call baz             => 0;
+      };
+      call [ foo => 200 ]    => 200;
+      call bar => object {
+        call [baz => -9999 ] => -9999;
+      };
+      call foo               => 200;
+      call bar => object {
+        call baz             => -9999;
+      };
     },
   },
   'nested'
@@ -148,8 +154,10 @@ is(
   object {
     call [ isa => 'FFI::C::StructDef' ] => T();
     call [ create => { foo => 200, bar => { baz => -9999 } } ] => object {
-      call sub { shift->foo             } => 200;
-      call sub { shift->bar->baz        } => -9999;
+      call foo              => 200;
+      call bar => object {
+        call baz            => -9999;
+      }
     },
   },
   'nested'
@@ -162,9 +170,9 @@ is(
   object {
     call [ isa => 'FFI::C::StructDef' ] => T();
     call create => object {
-      call sub { shift->foo          } => "\0\0\0\0\0\0\0\0\0\0";
-      call sub { shift->foo("hello") } => "hello\0\0\0\0\0";
-      call sub { shift->foo          } => "hello\0\0\0\0\0";
+      call foo                => "\0\0\0\0\0\0\0\0\0\0";
+      call [ foo => "hello" ] => "hello\0\0\0\0\0";
+      call foo                => "hello\0\0\0\0\0";
     },
   },
   'fixed string',
