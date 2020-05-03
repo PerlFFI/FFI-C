@@ -174,10 +174,20 @@ sub create
 
   local $self->{size} = $self->{size};
   my $count = $self->{members}->{count};
-  if(@_ == 1 && ! is_ref $_[0])
+  if(@_ == 1)
   {
-    $count = shift;
-    $self->{size} = $self->{members}->{member}->size * $count;
+    if(! is_ref $_[0])
+    {
+      $count = shift;
+    }
+    elsif(is_plain_arrayref $_[0])
+    {
+      $count = scalar @{$_[0]};
+    }
+    if($count)
+    {
+      $self->{size} = $self->{members}->{member}->size * $count;
+    }
   }
 
   if( (@_ == 2 && ! is_ref $_[0]) || ($self->size) )

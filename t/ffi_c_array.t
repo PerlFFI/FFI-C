@@ -56,4 +56,47 @@ subtest 'basic' => sub {
 
 };
 
+subtest 'var' => sub {
+
+  my $def = FFI::C::ArrayDef->new(
+    name => "foo_t",
+    members => [
+      FFI::C::StructDef->new( members => [
+        bar => 'sint64',
+      ]),
+    ],
+  );
+
+  is(
+    do {
+      my $o = $def->create([{ bar => -42 }]);
+      $def->ffi->cast('foo_t' => 'record(Foo)*', $o);
+    },
+    object {
+      call [ isa => 'Foo' ] => T();
+      call bar => -42;
+    },
+    'object argument',
+  );
+
+  is(
+    do {
+      our $r = Foo->new( bar => -47 );
+      $def->ffi->cast('record(Foo)*', 'foo_t', $r);
+    },
+    object {
+      call [ isa => 'FFI::C::Array' ] => T();
+      call sub { shift->get(0)->bar } => -47;
+      field owner => 1;
+      field def => object {
+        call [ isa => 'FFI::C::ArrayDef' ] => T();
+        call name => 'foo_t';
+      };
+      etc;
+    },
+    'object return',
+  );
+
+};
+
 done_testing;
