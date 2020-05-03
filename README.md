@@ -103,6 +103,25 @@ supported.
 
 ## ffi
 
+```perl
+FFI::C->ffi($ffi);
+my $ffi = FFI::C->ffi;
+```
+
+Get or set the [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) instance used for the current Perl file
+(`.pl` or `.pm`).
+
+By default a new Platypus instance is created the on the first call to
+`ffi`, or when a new type is created with `struct`, `union` or `array`
+below, so if you want to use your own Platypus instance make sure that
+you set it as soon as possible.
+
+The Platypus instance is file scoped because scoping on just one package
+doesn't make sense if you are defining multiple types in one file since
+each type must be in its own package.  It also doesn't make sense to make
+the Platypus instance global, because different distributions would
+conflict.
+
 ## struct
 
 ```
