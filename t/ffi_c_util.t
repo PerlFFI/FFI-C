@@ -123,8 +123,8 @@ subtest 'perl_to_c / c_to_perl' => sub {
       {
         x => 1,
         y => [
-          { foo => 2, bar => 3, baz => 5.5 },
-          { foo => 6, bar => 7, baz => 8.8 },
+          { foo => 2, bar => 3, baz => float(5.5, tolerance => 0.01) },
+          { foo => 6, bar => 7, baz => float(8.8, tolerance => 0.01) },
         ],
         z => [ 1, 2, 3 ],
         a => { u8 => match qr/^[0-9]+$/, u16 => 900 },
@@ -182,8 +182,8 @@ subtest 'perl_to_c / c_to_perl' => sub {
       {
         x => 1,
         y => [
-          { foo => 2, bar => 3, baz => 5.5 },
-          { foo => 6, bar => 7, baz => 8.8 },
+          { foo => 2, bar => 3, baz => float(5.5, tolerance => 0.01) },
+          { foo => 6, bar => 7, baz => float(8.8, tolerance => 0.01) },
         ],
         z => [ 1, 2, 3 ],
         a => { u8 => match qr/^[0-9]+$/, u16 => 900 },
