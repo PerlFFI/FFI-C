@@ -15,6 +15,9 @@ jobs:
     - env: CIP_TAG=static
     - env: CIP_TAG=5.31
     - env: CIP_TAG=5.30
+    - env: CIP_TAG=5.30-threads
+    - env: CIP_TAG=5.30-longdouble
+    - env: CIP_TAG=5.30-quadmath
     - env: CIP_TAG=5.28
     - env: CIP_TAG=5.26
     - env: CIP_TAG=5.24
