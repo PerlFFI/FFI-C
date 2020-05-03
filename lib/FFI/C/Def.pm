@@ -5,7 +5,7 @@ use warnings;
 use 5.008001;
 use FFI::C::FFI qw( malloc memset );
 use FFI::C::Util;
-use Ref::Util qw( is_blessed_ref is_ref is_plain_hashref );
+use Ref::Util qw( is_blessed_ref is_ref is_plain_hashref is_plain_arrayref );
 use Sub::Install ();
 use Sub::Util ();
 
@@ -151,10 +151,20 @@ sub _generate_class
 
       my $size  = $size;
       my $count = $count;
-      if(@_ == 1 && !is_ref $_[0])
+      if(@_ == 1)
       {
-        $count = shift;
-        $size = $member_size * $count;
+        if(!is_ref $_[0])
+        {
+          $count = shift;
+        }
+        elsif(is_plain_arrayref $_[0])
+        {
+          $count = scalar @{$_[0]};
+        }
+        if($count)
+        {
+          $size = $member_size * $count;
+        }
       }
 
       if(@_ == 2 && ! is_ref $_[0])
