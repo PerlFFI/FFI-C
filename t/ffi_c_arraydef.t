@@ -193,6 +193,18 @@ is(
   );
 
   is(
+    Color::VarArray->new([{ red => 255, green => 128, blue => 25 },{}]),
+    object {
+      call [ isa => 'Color::VarArray' ] => T();
+      call [ get => 0 ] => object {};
+      call [ get => 1 ] => object {};
+      call sub { my $self = shift; dies { $self->get(2) } } => match qr/OOB array index/;
+      call sub { my $self = shift; dies { $self->get(-1) } } => match qr/Negative array index/;
+    },
+    'Create var away with array ref',
+  );
+
+  is(
     $ffi->cast('opaque', 'color_array_t', malloc(10 * $vdef->size)),
     object {
       call [ isa => 'Color::VarArray' ] => T();
