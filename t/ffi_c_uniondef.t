@@ -69,18 +69,18 @@ is(
     call size => 8;
     call create => object {
       call [ isa => 'FFI::C::Union' ] => T();
-      call sub { shift->u8          } => 0;
-      call sub { shift->u16         } => 0;
-      call sub { shift->u32         } => 0;
-      call sub { shift->u64         } => 0;
-      call sub { shift->u8(22)      } => 22;
-      call sub { shift->u8          } => 22;
-      call sub { shift->u16(1024)   } => 1024;
-      call sub { shift->u16         } => 1024;
-      call sub { shift->u32(999999) } => 999999;
-      call sub { shift->u32         } => 999999;
-      call sub { shift->u64(55)     } => 55;
-      call sub { shift->u64         } => 55;
+      call u8                => 0;
+      call u16               => 0;
+      call u32               => 0;
+      call u64               => 0;
+      call [ u8 => 22 ]      => 22;
+      call u8                => 22;
+      call [ u16 => 1024 ]   => 1024;
+      call u16               => 1024;
+      call [ u32 => 999999 ] => 999999;
+      call u32               => 999999;
+      call [ u64 => 55 ]     => 55;
+      call u64               => 55;
     };
   },
   'union with members',

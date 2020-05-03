@@ -21,29 +21,29 @@ is(
       call [ isa => 'FFI::C::Array' ] => T();
       call [ get => 5] => object {
         call [ isa => 'FFI::C::Struct' ] => T();
-        call sub { shift->u64     } => 0;
-        call sub { shift->u64(10) } => 10;
-        call sub { shift->u64     } => 10;
+        call u64           => 0;
+        call [ u64 => 10 ] => 10;
+        call u64           => 10;
       };
       call [ get => 4] => object {
         call [ isa => 'FFI::C::Struct' ] => T();
-        call sub { shift->u64     } => 0;
-        call sub { shift->u64(6)  } => 6;
-        call sub { shift->u64     } => 6;
+        call u64          => 0;
+        call [ u64 => 6 ] => 6;
+        call u64          => 6;
       };
       call [ get => 5] => object {
         call [ isa => 'FFI::C::Struct' ] => T();
-        call sub { shift->u64     } => 10;
+        call u64 => 10;
       };
       call [ get => 4] => object {
         call [ isa => 'FFI::C::Struct' ] => T();
-        call sub { shift->u64     } => 6;
+        call u64 => 6;
       };
       call_list sub { map { $_->u64 } @{ shift() } } => [ 0, 0, 0, 0, 6, 10, 0, 0, 0, 0 ];
       call tie => array {
         item object {
           call [ isa => 'FFI::C::Struct' ] => T();
-          call sub { shift->u64 } => $_;
+          call u64 => $_;
         } for ( 0, 0, 0, 0, 6, 10, 0, 0, 0, 0 );
         end;
       };
@@ -51,7 +51,7 @@ is(
 
     call [ create => [ map { { u64 => $_ * 100 } } (1..10) ] ] => object {
       call [ isa => 'FFI::C::Array' ] => T();
-      call [ get => $_-1 ] => object { call sub { shift->u64 } => $_*100} for 1..10;
+      call [ get => $_-1 ] => object { call u64 => $_*100 } for 1..10;
     };
 
   },

@@ -43,7 +43,9 @@ subtest 'basic' => sub {
     },
     object {
       call [ isa => 'FFI::C::Array' ] => T();
-      call sub { shift->get(0)->bar } => -47;
+      call [ get => 0 ] => object {
+        call bar => -47;
+      };
       field owner => 1;
       field def => object {
         call [ isa => 'FFI::C::ArrayDef' ] => T();
@@ -86,7 +88,9 @@ subtest 'var' => sub {
     },
     object {
       call [ isa => 'FFI::C::Array' ] => T();
-      call sub { shift->get(0)->bar } => -47;
+      call [ get => 0 ] => object {
+        call bar => -47;
+      };
       field owner => 1;
       field def => object {
         call [ isa => 'FFI::C::ArrayDef' ] => T();

@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}},
 
 {{$NEXT}}
+  - non-generated struct/union objects properly support can (gh#28)
 
 0.03      2020-05-03 15:57:56 -0600
   - Allow creating variable array with array ref initalization (gh#27)
