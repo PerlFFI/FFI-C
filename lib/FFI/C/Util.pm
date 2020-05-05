@@ -9,7 +9,7 @@ use Carp ();
 use Class::Inspector;
 use base qw( Exporter );
 
-our @EXPORT_OK = qw( perl_to_c c_to_perl take owned );
+our @EXPORT_OK = qw( perl_to_c c_to_perl take owned set_array_count );
 
 # ABSTRACT: Utility functions for dealing with structured C data
 # VERSION
@@ -172,6 +172,27 @@ sub take ($)
   my $ptr = delete $inst->{ptr};
   Carp::croak("Object pointer went away") unless $ptr;
   $ptr;
+}
+
+=head2 set_array_count
+
+ set_array_count $inst, $count;
+
+This function sets the element count on a variable array returned from
+C (where normally there is no way to know from just the return value).
+If you try to set a count on a non-array or a fixed sized array an
+exception will be thrown.
+
+=cut
+
+sub set_array_count ($$)
+{
+  my($inst, $count) = @_;
+  Carp::croak("Not a FFI::C::Array")
+    unless is_blessed_ref $inst && $inst->isa('FFI::C::Array');
+  Carp::croak("This array already has a size")
+    if $inst->{count};
+  $inst->{count} = $count;
 }
 
 1;
