@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}},
 
 {{$NEXT}}
+
+0.04      2020-05-05 09:24:13 -0600
   - non-generated struct/union objects properly support can (gh#28)
   - Added nullable property to FFI::C::Def class (gh#30)
 
