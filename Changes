@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}},
 
 {{$NEXT}}
+  - Added set_array_count function to FFI::C::Util (gh#31)
 
 0.04      2020-05-05 09:24:13 -0600
   - non-generated struct/union objects properly support can (gh#28)
