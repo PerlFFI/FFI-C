@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use 5.008001;
 use Carp ();
-use Ref::Util qw( is_ref is_plain_arrayref );
+use Ref::Util qw( is_ref is_plain_arrayref is_plain_hashref );
 
 # ABSTRACT: C data types for FFI
 # VERSION
@@ -112,6 +112,8 @@ sub _gen
 
   my($name, $members);
 
+  my %extra = is_plain_hashref $_[-1] ? %{ pop() } : ();
+
   if(@_ == 2 && !is_ref $_[0] && is_plain_arrayref $_[1])
   {
     ($name, $members) = @_;
@@ -131,6 +133,7 @@ sub _gen
 
   $def_class->new(
     _ffi_get($filename),
+    %extra,
     name    => $name,
     class   => $class,
     members => $members,
