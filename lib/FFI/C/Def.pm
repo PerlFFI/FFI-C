@@ -69,6 +69,11 @@ This is an array reference, which specifies the member fields for the
 def.  How exactly it works depends on the subclass, so see the documentation
 for the specific def class that you are using.
 
+=item nullable
+
+If true, then the type can be C<undef> when passed into C.  C<undef> will be translated
+to C<NULL>.
+
 =back
 
 =cut
@@ -86,13 +91,14 @@ sub new
   Carp::croak("FFI::C::Def is an abstract class") if $class eq 'FFI::C::Def';
 
   my $self = bless {
-    ffi     => $ffi,
-    name    => delete $args{name},
-    class   => delete $args{class},
-    members => {},
-    align   => 0,
-    size    => 0,
-    args    => \%args,
+    ffi      => $ffi,
+    name     => delete $args{name},
+    class    => delete $args{class},
+    nullable => delete $args{nullable},
+    members  => {},
+    align    => 0,
+    size     => 0,
+    args     => \%args,
   }, $class;
 
   if($self->name)
@@ -100,10 +106,11 @@ sub new
     my $cdef = ref($self);
     $cdef =~ s/Def$//;
     $ffi->load_custom_type('::CDef' => $self->name,
-      name  => $self->name,
-      class => $self->class,
-      def   => $self,
-      cdef  => $cdef,
+      name     => $self->name,
+      class    => $self->class,
+      nullable => $self->nullable,
+      def      => $self,
+      cdef    => $cdef,
     );
     $ffi->def('FFI::C::Def', $self->name, $self);
   }
@@ -278,13 +285,21 @@ Returns the size of the def in bytes.
 
 Returns the alignment in bytes of the def.
 
+=head2 nullable
+
+ my $bool = $def->nullable;
+
+Returns true if C<undef> is allowed to be passed in to C functions.  C<undef> will
+be translated to C<NULL>.
+
 =cut
 
-sub name  { shift->{name} }
-sub class { shift->{class} }
-sub ffi   { shift->{ffi} }
-sub size  { shift->{size} }
-sub align { shift->{align} }
+sub name     { shift->{name} }
+sub class    { shift->{class} }
+sub ffi      { shift->{ffi} }
+sub size     { shift->{size} }
+sub align    { shift->{align} }
+sub nullable { shift->{nullable} }
 
 =head2 create
 
@@ -345,14 +360,16 @@ sub ffi_custom_type_api_1
   my $perl_to_native;
   my $native_to_perl;
 
-  my $name  = $args{name};
-  my $class = $args{class};
-  my $def   = $args{def}  || Carp::croak("no def defined");
-  my $cdef  = $args{cdef} || Carp::croak("no cdef defined");
+  my $name     = $args{name};
+  my $class    = $args{class};
+  my $def      = $args{def}  || Carp::croak("no def defined");
+  my $cdef     = $args{cdef} || Carp::croak("no cdef defined");
+  my $nullable = $args{nullable};
 
   if($class)
   {
     $perl_to_native = sub {
+      return undef if !defined $_[0] && $nullable;
       Carp::croak("argument is not a $class")
         unless is_blessed_ref $_[0]
         && $_[0]->isa($class);
@@ -371,6 +388,7 @@ sub ffi_custom_type_api_1
   elsif($name)
   {
     $perl_to_native = sub {
+      return undef if !defined $_[0] && $nullable;
       Carp::croak("argument is not a $name")
         unless is_blessed_ref $_[0]
         && ref($_[0]) eq $cdef
