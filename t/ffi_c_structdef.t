@@ -431,4 +431,20 @@ is(
   'Canot nest a struct or union def inside of itself',
 );
 
+is(
+  do {
+    my $ffi = FFI::Platypus->new( api => 1 );
+    FFI::C::StructDef->new(
+      $ffi,
+      name     => 'foo_t',
+      members  => [ x => 'uint8' ],
+      nullable => 1,
+    );
+    $ffi->cast('foo_t' => 'opaque' => undef);
+  },
+  U(),
+  'nullable okay'
+);
+
+
 done_testing;
