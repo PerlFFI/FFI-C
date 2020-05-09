@@ -3,7 +3,7 @@ package FFI::C::Util;
 use strict;
 use warnings;
 use 5.008001;
-use Ref::Util qw( is_blessed_ref is_plain_arrayref is_plain_hashref is_ref );
+use Ref::Util qw( is_blessed_ref is_plain_arrayref is_plain_hashref is_ref is_blessed_hashref );
 use Sub::Identify ();
 use Carp ();
 use Class::Inspector;
@@ -105,7 +105,7 @@ sub c_to_perl ($)
 
       # get the value;
       my $value = $inst->$key;
-      $value = &c_to_perl($value) if is_blessed_ref $value;
+      $value = &c_to_perl($value) if is_blessed_hashref $value;
       $value = [@$value] if is_plain_arrayref $value;
       $h{$key} = $value;
     }
