@@ -1,4 +1,4 @@
-use Test2::V0 -no_srand => 1;
+use Test2::V0 0.000081 -no_srand => 1;
 use FFI::C::Util qw( owned take perl_to_c c_to_perl set_array_count );
 use FFI::Platypus::Memory qw( free );
 use FFI::C::StructDef;
