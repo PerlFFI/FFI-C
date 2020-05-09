@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}},
 
 {{$NEXT}}
+  - Bumped Test2::Suite prereq to get float (gh#33)
+  - Fixes for Perls with 32bit IV (gh#34)
 
 0.05      2020-05-07 04:58:02 -0600
   - Added set_array_count function to FFI::C::Util (gh#31)

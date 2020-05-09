@@ -15,6 +15,9 @@ jobs:
     - env: CIP_TAG=static
     - env: CIP_TAG=5.31
     - env: CIP_TAG=5.30
+    - env: CIP_TAG=5.30-buster-arm64v8
+      arch: arm64
+    - env: CIP_TAG=5.30-buster32
     - env: CIP_TAG=5.30-threads
     - env: CIP_TAG=5.30-longdouble
     - env: CIP_TAG=5.30-quadmath
