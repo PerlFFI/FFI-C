@@ -1,6 +1,8 @@
 Revision history for {{$dist->name}}},
 
 {{$NEXT}}
+
+0.06      2020-05-09 04:41:32 -0600
   - Bumped Test2::Suite prereq to get float (gh#33)
   - Fixes for Perls with 32bit IV (gh#34)
 
