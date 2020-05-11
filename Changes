@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}},
 
 {{$NEXT}}
+  - Added trim_string property to FFI::C::StructDef (gh#267)
 
 0.06      2020-05-09 04:41:32 -0600
   - Bumped Test2::Suite prereq to get float (gh#33)

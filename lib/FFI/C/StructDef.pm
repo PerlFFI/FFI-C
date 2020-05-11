@@ -50,6 +50,11 @@ For standard def options, see L<FFI::C::Def>.
 This should be an array reference containing name, type pairs,
 in the order that they will be stored in the struct.
 
+=item trim_string
+
+If true, fixed-length strings should be treated as null terminated
+strings and be trimmed.
+
 =back
 
 =cut
@@ -68,6 +73,7 @@ sub new
 
   my %args = %{ delete $self->{args} };
 
+  $self->{trim_string} = delete $args{trim_string} ? 1 : 0;
   my $offset    = 0;
   my $alignment = 0;
   my $anon      = 0;
@@ -133,11 +139,12 @@ sub new
       }
       elsif($self->_is_kind("$spec*", 'record'))
       {
-        $member{spec}   = $spec;
-        $member{rec}    = 1;
-        $member{size}   = $self->ffi->sizeof("$spec*");
         local $@;
-        $member{align}  = eval { $self->ffi->alignof("$spec*") };
+        $member{align}       = eval { $self->ffi->alignof("$spec*") };
+        $member{trim_string} = 1 if $self->{trim_string};
+        $member{spec}        = $spec;
+        $member{rec}         = 1;
+        $member{size}        = $self->ffi->sizeof("$spec*");
         Carp::croak("undefined, or unsupported type: $spec") if $@;
       }
       else
@@ -163,7 +170,7 @@ sub new
     }
   }
 
-  $self->{size} = $offset unless $self->_is_union;
+  $self->{size}        = $offset unless $self->_is_union;
 
   Carp::carp("Unknown argument: $_") for sort keys %args;
 
@@ -211,6 +218,15 @@ sub new
 
           if($self->{members}->{$name}->{rec})
           {
+            if($self->{trim_string})
+            {
+              unless(__PACKAGE__->can('_cast_string'))
+              {
+                $ffi->attach_cast('_cast_string', 'opaque', 'string');
+              }
+              $set = $ffi->function( FFI::C::FFI::memcpy_addr() => ['opaque',$type,'size_t'] => 'string')->sub_ref;
+              $get = \&_cast_string;
+            }
             $code = sub {
               my $self = shift;
               my $ptr = $self->{ptr} + $offset;
@@ -289,8 +305,6 @@ sub new
   $self;
 }
 
-1;
-
 =head1 METHODS
 
 =head2 create
@@ -303,6 +317,19 @@ sub new
 This creates an instance of the C<struct>, returns a L<FFI::C::Struct>.
 
 You can optionally initialize member values using C<%init>.
+
+=head2 trim_string
+
+ my $bool = $def->trim_string;
+
+Returns true if fixed-length strings should be treated as null terminated
+strings and be trimmed.
+
+=cut
+
+sub trim_string { shift->{trim_string} }
+
+1;
 
 =head1 SEE ALSO
 
