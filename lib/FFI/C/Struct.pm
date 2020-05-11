@@ -102,6 +102,7 @@ sub AUTOLOAD
 
     my $value = $ffi->cast( 'opaque' => $member->{spec} . "*", $ptr );
     $value = $$value unless $member->{rec};
+    $value =~ s/\0.*$// if $member->{trim_string};
     return $value;
   }
   else
