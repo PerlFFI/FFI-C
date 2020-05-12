@@ -412,6 +412,19 @@ sub ffi_custom_type_api_1
   }
 }
 
+package FFI::C::EnumDef;
+
+sub new
+{
+  my($class, %self) = @_;
+  bless \%self, $class;
+}
+
+sub str_lookup { shift->{str_lookup} }
+sub int_lookup { shift->{int_lookup} }
+sub type { shift->{type} }
+sub rev { shift->{rev} }
+
 1;
 
 =head1 SEE ALSO
