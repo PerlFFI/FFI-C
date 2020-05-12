@@ -180,6 +180,19 @@ generated.  For an array you give it the member type and the element count.
 The element count is optional for variable length arrays, but keep in mind
 that when you create such an array you do need to provide a size.
 
+## enum
+
+```
+FFI::C->enum($name, \@values, \%config);
+FFI::C->enum(\@values, \%config);
+FFI::C->enum(\@values, \%config);
+FFI::C->enum(\@values);
+```
+
+Defines an enum.  The `@values` and `%config` are passed to
+[FFI::Platypus::Type::Enum](https://metacpan.org/pod/FFI::Platypus::Type::Enum), except the constants are exported
+to the calling package by default.
+
 # EXAMPLES
 
 ## unix time struct

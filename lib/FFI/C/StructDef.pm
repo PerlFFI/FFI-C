@@ -109,6 +109,10 @@ sub new
       {
         $spec = $def;
       }
+      elsif($def = $self->ffi->def('FFI::C::EnumDef', $spec))
+      {
+        $spec = $def;
+      }
 
       if(is_blessed_ref $spec)
       {
@@ -119,6 +123,13 @@ sub new
           $member{nest}  = $spec;
           $member{size}  = $spec->size;
           $member{align} = $spec->align;
+        }
+        elsif($spec->isa('FFI::C::EnumDef'))
+        {
+          $member{spec}       = $spec->type;
+          $member{size}       = $self->ffi->sizeof($spec->type);
+          $member{align}      = $self->ffi->alignof($spec->type);
+          $member{enum}       = $spec;
         }
       }
       elsif($self->_is_kind($spec, 'scalar'))
@@ -278,6 +289,50 @@ sub new
               tie @a, 'FFI::C::Struct::MemberArrayTie', $self, $name, $count;
               return \@a;
             };
+          }
+          elsif(my $enum = $self->{members}->{$name}->{enum})
+          {
+            my $str_lookup = $enum->str_lookup;
+            my $int_lookup = $enum->int_lookup;
+            if($enum->rev eq 'str')
+            {
+              $code = sub {
+                my $self = shift;
+                my $ptr = $self->{ptr} + $offset;
+                Carp::croak("$name tried to set member to non-scalar") if @_ && is_ref $_[0];
+                my $ret = @_
+                  ? do {
+                    my $arg = exists $str_lookup->{$_[0]}
+                      ? $str_lookup->{$_[0]}
+                      : exists $int_lookup->{$_[0]}
+                        ? $_[0]
+                        : Carp::croak("No such value for $name: $_[0]");
+                    ${ $set->($ptr,\$arg,$size) }
+                  }
+                  : ${ $get->($ptr) };
+                $int_lookup->{$ret}
+                  ? $int_lookup->{$ret}
+                  : $ret;
+              };
+            }
+            else
+            {
+              $code = sub {
+                my $self = shift;
+                my $ptr = $self->{ptr} + $offset;
+                Carp::croak("$name tried to set member to non-scalar") if @_ && is_ref $_[0];
+                @_
+                  ? do {
+                    my $arg = exists $str_lookup->{$_[0]}
+                      ? $str_lookup->{$_[0]}
+                      : exists $int_lookup->{$_[0]}
+                        ? $_[0]
+                        : Carp::croak("No such value for $name: $_[0]");
+                    ${ $set->($ptr,\$arg,$size) }
+                  }
+                  : ${ $get->($ptr) };
+              };
+            }
           }
           else
           {
