@@ -27,28 +27,68 @@ is(MyEnum1::BAZ(), 12);
   is($ffi->cast('my_struct1_t' => 'enum*', $m), \12);
 }
 
-{ package MyEnum2;
+{ package MyEnum3;
   FFI::C->enum(['foo','bar',[baz=>12]], { rev => 'int' });
-  package MyStruct2;
-  FFI::C->struct([foo => 'my_enum2_t']);
+  package MyStruct3;
+  FFI::C->struct([foo => 'my_enum3_t']);
 }
 
-is(MyEnum2::FOO(), 0);
-is(MyEnum2::BAR(), 1);
-is(MyEnum2::BAZ(), 12);
+is(MyEnum3::FOO(), 0);
+is(MyEnum3::BAR(), 1);
+is(MyEnum3::BAZ(), 12);
 
 {
-  my $m = MyStruct2->new;
+  my $m = MyStruct3->new;
   is($m->foo, 0);
-  is($ffi->cast('my_struct2_t' => 'enum*', $m), \0);
+  is($ffi->cast('my_struct3_t' => 'enum*', $m), \0);
 
   is($m->foo('bar'), 1);
   is($m->foo, 1);
-  is($ffi->cast('my_struct2_t' => 'enum*', $m), \1);
+  is($ffi->cast('my_struct3_t' => 'enum*', $m), \1);
 
   is($m->foo(12), 12);
   is($m->foo, 12);
+  is($ffi->cast('my_struct3_t' => 'enum*', $m), \12);
+}
+
+require FFI::C::StructDef;
+
+{
+  my $m = FFI::C::StructDef->new(
+    $ffi,
+    name => 'my_struct2_t',
+    members => [ 'foo' => 'my_enum1_t' ],
+  )->create;
+
+  is($m->foo, 'foo');
+  is($ffi->cast('my_struct2_t' => 'enum*', $m), \0);
+
+  is($m->foo('bar'), 'bar');
+  is($m->foo, 'bar');
+  is($ffi->cast('my_struct2_t' => 'enum*', $m), \1);
+
+  is($m->foo(12), 'baz');
+  is($m->foo, 'baz');
   is($ffi->cast('my_struct2_t' => 'enum*', $m), \12);
+}
+
+{
+  my $m = FFI::C::StructDef->new(
+    $ffi,
+    name => 'my_struct4_t',
+    members => [ 'foo' => 'my_enum3_t' ],
+  )->create;
+
+  is($m->foo, 0);
+  is($ffi->cast('my_struct4_t' => 'enum*', $m), \0);
+
+  is($m->foo('bar'), 1);
+  is($m->foo, 1);
+  is($ffi->cast('my_struct4_t' => 'enum*', $m), \1);
+
+  is($m->foo(12), 12);
+  is($m->foo, 12);
+  is($ffi->cast('my_struct4_t' => 'enum*', $m), \12);
 }
 
 done_testing;

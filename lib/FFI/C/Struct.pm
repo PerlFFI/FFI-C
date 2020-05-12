@@ -96,6 +96,22 @@ sub AUTOLOAD
       # For fixed strings, pad short strings with NULLs
       $src = \($_[0] . ("\0" x ($member->{size} - do { use bytes; length $_[0] }))) if $member->{rec} && $member->{size} > do { use bytes; length $_[0] };
 
+      if(my $enum = $member->{enum})
+      {
+        if(exists $enum->str_lookup->{$$src})
+        {
+          $src = \($enum->str_lookup->{$$src});
+        }
+        elsif(exists $enum->int_lookup->{$$src})
+        {
+          # nothing
+        }
+        else
+        {
+          Carp::croak("$name tried to set member to invalid enum value");
+        }
+      }
+
       $ffi->function( FFI::C::FFI::memcpy_addr() => [ 'opaque', $member->{spec} . "*", 'size_t' ] => 'opaque' )
           ->call($ptr, $src, $member->{unitsize} || $member->{size});
     }
@@ -103,6 +119,18 @@ sub AUTOLOAD
     my $value = $ffi->cast( 'opaque' => $member->{spec} . "*", $ptr );
     $value = $$value unless $member->{rec};
     $value =~ s/\0.*$// if $member->{trim_string};
+
+    if(my $enum = $member->{enum})
+    {
+      if($enum->rev eq 'str')
+      {
+        if(exists $enum->int_lookup->{$value})
+        {
+          $value = $enum->int_lookup->{$value};
+        }
+      }
+    }
+
     return $value;
   }
   else
