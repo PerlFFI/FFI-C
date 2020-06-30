@@ -3,7 +3,7 @@ dist: xenial
 services:
   - docker
 before_install:
-  - curl https://raw.githubusercontent.com/plicease/cip/master/bin/travis-bootstrap | bash
+  - curl https://raw.githubusercontent.com/plicease/cip/main/bin/travis-bootstrap | bash
   - cip before-install
 install:
   - cip diag
@@ -35,7 +35,7 @@ jobs:
 
 branches:
   only:
-    - master
+    - main
 
 cache:
   directories:
