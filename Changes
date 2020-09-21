@@ -2,6 +2,7 @@ Revision history for {{$dist->name}}},
 
 {{$NEXT}}
   - Move to PerlFFI org (gh#37)
+  - Add FFI::C::File class (gh#38)
 
 0.08      2020-05-12 19:20:26 -0400
   - Added enum method to FFI::C (gh#23, gh#36)

@@ -41,6 +41,8 @@ Creates a new instance of the C<union>.
 
 =item L<FFI::C::Def>
 
+=item L<FFI::C::File>
+
 =item L<FFI::C::Struct>
 
 =item L<FFI::C::StructDef>
