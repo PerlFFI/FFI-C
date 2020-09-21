@@ -260,6 +260,8 @@ So-called "pass-by-value" is not and will not be supported.  For
 
 =item L<FFI::C::Def>
 
+=item L<FFI::C::File>
+
 =item L<FFI::C::Struct>
 
 =item L<FFI::C::StructDef>
