@@ -12,6 +12,9 @@ use base qw( FFI::C::File );
 
  use FFI::C::PosixFile;
 
+ my $stdout = FFI::C::PosixFile->fdopen(1, "w");
+ say $stdout->fileno;  # prints 1
+
 =head1 DESCRIPTION
 
 This is a subclass of L<FFI::C::File> which adds a couple of useful POSIX extensions that
@@ -101,6 +104,8 @@ else
 =item L<FFI::C::Def>
 
 =item L<FFI::C::File>
+
+=item L<FFI::C::PosixFile>
 
 =item L<FFI::C::Struct>
 

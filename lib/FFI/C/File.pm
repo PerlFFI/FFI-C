@@ -90,6 +90,9 @@ Perl:
 Constructors and methods will throw an exception on errors.  End-of-File (EOF) is not considered
 an error.
 
+The subclass L<FFI::C::PosixFile> extends this class by adding some POSIX extensions for
+platforms that support them.
+
 =cut
 
 our $ffi = FFI::Platypus->new( api => 1, lib => [undef] );
@@ -219,6 +222,8 @@ Relative to the start of the file
 Relative to the current location of the file pointer.
 
 =item C<'end'> | SEEK_END
+
+Relative to the end of the file.
 
 =back
 
@@ -350,6 +355,8 @@ sub DESTROY
 =item L<FFI::C::Def>
 
 =item L<FFI::C::File>
+
+=item L<FFI::C::PosixFile>
 
 =item L<FFI::C::Struct>
 
