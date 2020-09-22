@@ -98,7 +98,7 @@ exact format of C<$mode>.
 
 =cut
 
-my $ffi = FFI::Platypus->new( api => 1, lib => [undef] );
+our $ffi = FFI::Platypus->new( api => 1, lib => [undef] );
 $ffi->type( 'object(FFI::C::File)' => 'FILE' );
 
 $ffi->attach( fopen => [ 'string', 'string' ] => 'opaque' => sub {
