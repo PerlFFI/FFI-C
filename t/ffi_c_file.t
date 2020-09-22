@@ -101,6 +101,25 @@ subtest 'freopen' => sub {
 
 };
 
+subtest 'fseek / ftell / rewind' => sub {
+
+  my $file = FFI::C::File->fopen(__FILE__, "r");
+  is $file->ftell, 0;
+  $file->fseek(0, 'end');
+  cmp_ok $file->ftell, '>', 0;
+
+  note "ftell = ", $file->ftell;
+
+  $file->fseek(0, 'set');
+  is $file->ftell, 0;
+  $file->fseek(10, 'cur');
+  is $file->ftell, 10;
+  $file->fseek(-5, 'cur');
+  is $file->ftell, 5;
+  $file->rewind;
+  is $file->ftell, 0;
+};
+
 subtest 'exceptions' => sub {
 
   is dies { FFI::C::File->fopen("bogus.txt", "r") }, match qr/^Error opening bogus\.txt with mode r:/;

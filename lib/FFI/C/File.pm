@@ -4,6 +4,9 @@ use strict;
 use warnings;
 use Carp qw( croak );
 use FFI::Platypus 1.00;
+use base qw( Exporter );
+
+our @EXPORT_OK = qw( SEEK_SET SEEK_CUR SEEK_END );
 
 # ABSTRACT: Perl interface to C File pointer
 # VERSION
@@ -87,6 +90,17 @@ Perl:
 Constructors and methods will throw an exception on errors.  End-of-File (EOF) is not considered
 an error.
 
+=cut
+
+our $ffi = FFI::Platypus->new( api => 1, lib => [undef] );
+$ffi->type( 'object(FFI::C::File)' => 'FILE' );
+$ffi->load_custom_type('::Enum', 'whence',
+  { package => 'FFI::C::File', prefix => 'SEEK_', type => 'int' },
+  'set',
+  'cur',
+  'end',
+);
+
 =head1 CONSTRUCTOR
 
 =head2 fopen
@@ -97,9 +111,6 @@ Opens the file with the given mode.  See your standard library C documentation f
 exact format of C<$mode>.
 
 =cut
-
-our $ffi = FFI::Platypus->new( api => 1, lib => [undef] );
-$ffi->type( 'object(FFI::C::File)' => 'FILE' );
 
 $ffi->attach( fopen => [ 'string', 'string' ] => 'opaque' => sub {
   my($xsub, $class, $filename, $mode) = @_;
@@ -189,6 +200,54 @@ Write up to C<$size> bytes from C<$buffer>.  Returns the number of bytes actuall
 =cut
 
 $ffi->attach( fwrite => ['string', 'size_t', 'size_t', 'FILE'] => 'size_t' => \&_read_write_wrapper );
+
+=head2 fseek
+
+ $file->fseek($offset, $whence);
+
+Seek to the specified location in the file.  C<$whence> should be one of the following
+(either strings, or constants can be used, the constants can be imported from this module):
+
+=over 4
+
+=item C<'set'> | SEEK_SET
+
+Relative to the start of the file
+
+=item C<'cur'> | SEEK_CUR
+
+Relative to the current location of the file pointer.
+
+=item C<'end'> | SEEK_END
+
+=back
+
+=cut
+
+$ffi->attach( fseek => ['FILE', 'long', 'whence'] => 'int', sub {
+  my $xsub = shift;
+  $xsub->(@_) and croak "Error seeking file: $!";
+});
+
+=head2 ftell
+
+ my $offset = $file->ftell;
+
+Returns the file position indicator for the file pointer.
+
+=cut
+
+$ffi->attach( ftell => ['FILE'] => 'long' );
+
+=head2 rewind
+
+ $file->rewind;
+
+Moves the file position indicator to the beginning of the file.
+
+=cut
+
+$ffi->attach( rewind => ['FILE'] );
 
 =head2 fflush
 
