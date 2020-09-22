@@ -400,6 +400,8 @@ sub trim_string { shift->{trim_string} }
 
 =item L<FFI::C::File>
 
+=item L<FFI::C::PosixFile>
+
 =item L<FFI::C::Struct>
 
 =item L<FFI::C::StructDef>
