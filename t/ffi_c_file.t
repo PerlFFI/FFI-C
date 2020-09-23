@@ -56,6 +56,13 @@ subtest 'basic read' => sub {
 
 };
 
+subtest 'tmpfile' => sub {
+  skip_all 'tricky permissions on windows' if $^O eq 'MSWin32';
+
+  my $file = FFI::C::File->tmpfile;
+  isa_ok $file, 'FFI::C::File';
+};
+
 subtest 'basic write' => sub {
 
   my $path = tempfile;

@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}},
 
 {{$NEXT}}
+  - Add tmpfile constructor for FFI::C::File (gh#41)
 
 0.09      2020-09-22 14:28:36 -0600
   - Move to PerlFFI org (gh#37)
