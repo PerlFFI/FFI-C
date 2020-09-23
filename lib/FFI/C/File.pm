@@ -125,6 +125,27 @@ $ffi->attach( fopen => [ 'string', 'string' ] => 'opaque' => sub {
   bless \$ptr, $class;
 });
 
+=head2 tmpfile
+
+ my $file = FFI::C::File->tmpfile;
+
+Creates and opens a temporary file.  The file is opened as binary file for update.  On
+Windows this may require administrator privileges.
+
+=cut
+
+$ffi->attach( tmpfile => [] => 'opaque' => sub {
+  my($xsub, $class) = @_;
+  if(my $ptr = $xsub->())
+  {
+    return bless \$ptr, $class;
+  }
+  else
+  {
+    croak "Error opening temp file: $!"
+  }
+});
+
 =head2 new
 
  my $file = FFI::C::File->new($ptr);

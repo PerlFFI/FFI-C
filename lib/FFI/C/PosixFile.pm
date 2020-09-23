@@ -79,7 +79,7 @@ Returns the POSIX file descriptor for the file pointer.
 else
 {
   require Sub::Install;
-  foreach my $ctor (qw( fopen freopen new fdopen ))
+  foreach my $ctor (qw( fopen freopen new fdopen tmpfile ))
   {
     Sub::Install::install_sub({
       code => sub { croak "FFI::C::PosixFile not supported on this platform"; },
