@@ -1,4 +1,4 @@
-# FFI::C [![Build Status](https://travis-ci.org/PerlFFI/FFI-C.svg)](http://travis-ci.org/PerlFFI/FFI-C) ![windows](https://github.com/PerlFFI/FFI-C/workflows/windows/badge.svg) ![macos](https://github.com/PerlFFI/FFI-C/workflows/macos/badge.svg)
+# FFI::C [![Build Status](https://api.travis-ci.com/PerlFFI/FFI-C.svg?branch=main)](https://travis-ci.com/github/PerlFFI/FFI-C) ![windows](https://github.com/PerlFFI/FFI-C/workflows/windows/badge.svg) ![macos](https://github.com/PerlFFI/FFI-C/workflows/macos/badge.svg)
 
 C data types for FFI
 
