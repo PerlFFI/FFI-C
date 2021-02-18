@@ -25,9 +25,10 @@ my $ffi = FFI::Platypus->new( api => 1, lib => [undef] );
 
 constant->import( memcpy_addr => $ffi->find_symbol( 'memcpy' ) );
 
-$ffi->attach( malloc => ['size_t']                => 'opaque', '$'   );
-$ffi->attach( free   => ['opaque']                => 'void',   '$'   );
-$ffi->attach( memset => ['opaque','int','size_t'] => 'opaque', '$$$' );
+$ffi->attach( malloc => ['size_t']                   => 'opaque', '$'   );
+$ffi->attach( free   => ['opaque']                   => 'void',   '$'   );
+$ffi->attach( memset => ['opaque','int','size_t']    => 'opaque', '$$$' );
+$ffi->attach( memcpy => ['opaque','string','size_t'] => 'opaque', '$$$' );
 
 ## should this be configurable for when we hunt for memory leaks?
 #sub malloc ($)
@@ -65,6 +66,8 @@ $ffi->attach( memset => ['opaque','int','size_t'] => 'opaque', '$$$' );
 =item L<FFI::C::File>
 
 =item L<FFI::C::PosixFile>
+
+=item L<FFI::C::String>
 
 =item L<FFI::C::Struct>
 

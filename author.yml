@@ -8,6 +8,10 @@ pod_spelling_system:
   stopwords:
     - ffi
     - nullable
+    - endianness
+    - libc
+    - CPU
+    - WTF
 
 pod_coverage:
   skip: 0

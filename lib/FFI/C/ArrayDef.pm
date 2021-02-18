@@ -219,6 +219,8 @@ sub create
 
 =item L<FFI::C::PosixFile>
 
+=item L<FFI::C::String>
+
 =item L<FFI::C::Struct>
 
 =item L<FFI::C::StructDef>

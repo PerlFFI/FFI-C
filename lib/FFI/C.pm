@@ -267,6 +267,8 @@ So-called "pass-by-value" is not and will not be supported.  For
 
 =item L<FFI::C::PosixFile>
 
+=item L<FFI::C::String>
+
 =item L<FFI::C::Struct>
 
 =item L<FFI::C::StructDef>
