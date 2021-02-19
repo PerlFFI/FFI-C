@@ -14,6 +14,7 @@ $modules{$_} = $_ for qw(
   Class::Inspector
   ExtUtils::MakeMaker
   FFI::Platypus
+  FFI::Platypus::Buffer
   FFI::Platypus::Memory
   FFI::Platypus::Record
   FFI::Platypus::Type::Enum
