@@ -1,4 +1,4 @@
-# FFI::C [![Build Status](https://travis-ci.org/PerlFFI/FFI-C.svg)](http://travis-ci.org/PerlFFI/FFI-C) ![windows](https://github.com/PerlFFI/FFI-C/workflows/windows/badge.svg) ![macos](https://github.com/PerlFFI/FFI-C/workflows/macos/badge.svg)
+# FFI::C [![Build Status](https://api.travis-ci.com/PerlFFI/FFI-C.svg?branch=main)](https://travis-ci.com/github/PerlFFI/FFI-C) ![windows](https://github.com/PerlFFI/FFI-C/workflows/windows/badge.svg) ![macos](https://github.com/PerlFFI/FFI-C/workflows/macos/badge.svg)
 
 C data types for FFI
 
@@ -265,6 +265,7 @@ So-called "pass-by-value" is not and will not be supported.  For
 - [FFI::C::Def](https://metacpan.org/pod/FFI::C::Def)
 - [FFI::C::File](https://metacpan.org/pod/FFI::C::File)
 - [FFI::C::PosixFile](https://metacpan.org/pod/FFI::C::PosixFile)
+- [FFI::C::String](https://metacpan.org/pod/FFI::C::String)
 - [FFI::C::Struct](https://metacpan.org/pod/FFI::C::Struct)
 - [FFI::C::StructDef](https://metacpan.org/pod/FFI::C::StructDef)
 - [FFI::C::Union](https://metacpan.org/pod/FFI::C::Union)
