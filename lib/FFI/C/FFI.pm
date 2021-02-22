@@ -21,7 +21,7 @@ This module is private for L<FFI::C>
 
 our @EXPORT_OK = qw( malloc free memset memcpy_addr );
 
-my $ffi = FFI::Platypus->new( api => 1, lib => [undef] );
+our $ffi = FFI::Platypus->new( api => 1, lib => [undef] );
 
 constant->import( memcpy_addr => $ffi->find_symbol( 'memcpy' ) );
 

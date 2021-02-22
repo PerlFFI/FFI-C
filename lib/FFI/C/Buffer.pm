@@ -50,6 +50,9 @@ sub new
 {
   my $class = shift;
 
+  Carp::croak("You cannot create an instance of FFI::C::String directly")
+    if $class eq 'FFI::C::String';
+
   my $buffer_size;
   my $ptr;
   my $owner;
@@ -130,15 +133,6 @@ sub buffer_size
   @_ > 0
     ? $self->{buffer_size} = shift
     : $self->{buffer_size};
-}
-
-sub DESTROY
-{
-  my($self) = @_;
-  if($self->{ptr} && !$self->{owner})
-  {
-    FFI::C::FFI::free(delete $self->{ptr});
-  }
 }
 
 =head2 to_perl
@@ -222,6 +216,15 @@ sub from_perl
   }
 
   1;
+}
+
+sub DESTROY
+{
+  my($self) = @_;
+  if($self->{ptr} && !$self->{owner})
+  {
+    FFI::C::FFI::free(delete $self->{ptr});
+  }
 }
 
 1;
