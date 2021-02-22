@@ -22,6 +22,9 @@ are typically returned as two argument types or an argument and a return value. 
 to set the buffer size on the object as soon as possible, otherwise some operations may
 not work.
 
+The buffer is freed when the buffer object is undefined or falls out of scope.  Care must be
+taken that the pointer isn't being used after the buffer is freed.
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -83,11 +86,28 @@ sub new
 
 =head1 METHODS
 
+=head2 ptr
+
+ my $ptr = $buf->ptr;
+
+Get the pointer to the start of the buffer.
+
+Care should be taken when using this pointer, because the buffer will be
+freed if the C<$buf> object is explicitly freed or falls out of scope.
+If the buffer is freed then the pointer is no longer valid.
+
+=cut
+
+sub ptr
+{
+  shift->{ptr};
+}
+
 =head2 buffer_size
 
  my $size = $buf->buffer_size;
  $buf->buffer_size($size);
- 
+
 Get or set the size of the buffer.
 
 Setting the buffer size should be done with great care!  Normally you would only ever

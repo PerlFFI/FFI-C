@@ -262,6 +262,7 @@ So-called "pass-by-value" is not and will not be supported.  For
 - [FFI::C](https://metacpan.org/pod/FFI::C)
 - [FFI::C::Array](https://metacpan.org/pod/FFI::C::Array)
 - [FFI::C::ArrayDef](https://metacpan.org/pod/FFI::C::ArrayDef)
+- [FFI::C::Buffer](https://metacpan.org/pod/FFI::C::Buffer)
 - [FFI::C::Def](https://metacpan.org/pod/FFI::C::Def)
 - [FFI::C::File](https://metacpan.org/pod/FFI::C::File)
 - [FFI::C::PosixFile](https://metacpan.org/pod/FFI::C::PosixFile)
