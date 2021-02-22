@@ -13,7 +13,7 @@ use Ref::Util qw( is_ref is_plain_arrayref );
 
 # EXAMPLE: examples/synopsis/struct.pl
 
-=head2 DESCRIPTION
+=head1 DESCRIPTION
 
 This class represents an instance of a C C<struct>.  This class can be created using
 C<new> on the generated class, if that was specified for the L<FFI::C::StructDef>,

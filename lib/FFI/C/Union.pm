@@ -11,7 +11,7 @@ use base qw( FFI::C::Struct );
 
 # EXAMPLE: examples/synopsis/union.pl
 
-=head2 DESCRIPTION
+=head1 DESCRIPTION
 
 This class represents an instance of a C C<union>.  This class can be created using
 C<new> on the generated class, if that was specified for the L<FFI::C::UnionDef>,
