@@ -101,6 +101,8 @@ else
 
 =item L<FFI::C::ArrayDef>
 
+=item L<FFI::C::Buffer>
+
 =item L<FFI::C::Def>
 
 =item L<FFI::C::File>

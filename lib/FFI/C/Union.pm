@@ -39,6 +39,8 @@ Creates a new instance of the C<union>.
 
 =item L<FFI::C::ArrayDef>
 
+=item L<FFI::C::Buffer>
+
 =item L<FFI::C::Def>
 
 =item L<FFI::C::File>
