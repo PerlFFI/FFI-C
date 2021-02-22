@@ -2,8 +2,10 @@ package FFI::C::Buffer;
 
 use strict;
 use warnings;
+use FFI::Platypus::Buffer 1.28 ();
 use FFI::C::FFI ();
 use Ref::Util qw( is_ref is_plain_scalarref );
+use Carp qw( croak );
 
 # ABSTRACT: Interface to unstructured C buffer data
 # VERSION
@@ -37,9 +39,10 @@ Creates a new buffer of the given size.
 The first form creates an uninitialized buffer of the given size.
 
 The second form creates a buffer the same size as C<$raw> and copies
-the content of C<$raw> into it.
-
-If C<$raw> is a Perl UTF-8 string then it will be encoded correctly.
+the content of C<$raw> into it.  Keep in mind that if C<$raw> is a
+UTF-8 Perl string then that flag will be lost when the data is
+retrieved from the buffer object in Perl and you will need to encode
+it to get it back to its original state.
 
 =cut
 
@@ -53,20 +56,22 @@ sub new
 
   if(@_ == 1)
   {
-    if(is_plain_scalarref $_[0])
+    my $src_ptr;
+    if(is_plain_scalarref $_[0] && !is_ref ${$_[0]})
     {
-      die 'todo';
+      ($src_ptr, $buffer_size) = FFI::Platypus::Buffer::scalar_to_buffer(${$_[0]});
     }
     elsif(!is_ref $_[0])
     {
       $buffer_size = shift;
-      $ptr = FFI::C::FFI::malloc($buffer_size);
-      die "Unable to allocate $buffer_size bytes" unless defined $ptr;
     }
     else
     {
       die 'bad usage';
     }
+    $ptr = FFI::C::FFI::malloc($buffer_size);
+    die "Unable to allocate $buffer_size bytes" unless defined $ptr;
+    FFI::C::FFI::memcpy($ptr, $src_ptr, $buffer_size) if defined $src_ptr;
   }
   elsif(@_ == 2)
   {
@@ -133,6 +138,50 @@ sub DESTROY
   if($self->{ptr} && !$self->{owner})
   {
     FFI::C::FFI::free(delete $self->{ptr});
+  }
+}
+
+=head2 to_perl
+
+ my $raw = $buf->to_perl;
+
+Copies the raw data into a Perl scalar and returns it.  If this is UTF-8 (or some
+other encoding) data then you will want to encode it before treating it as such.
+
+=cut
+
+sub to_perl
+{
+  my($self) = @_;
+  my $win;
+  $self->window($win);
+  return $win;  # oddly this will copy the scalar.
+}
+
+=head2 window
+
+ $buf->window($win);
+
+This creates a read-only window into the buffer.  This can save some memory and
+time if you want to just read from the buffer in Perl without having to copy
+it into a real Perl scalar.
+
+As with other methods, care must be taken with the window variable if the buffer
+is freed.
+
+=cut
+
+sub window
+{
+  my $self = shift;
+  if(@_ == 1)
+  {
+    push @_, $self->ptr, $self->buffer_size;
+    goto \&FFI::Platypus::Buffer::window;
+  }
+  else
+  {
+    croak("usage: \$buf->window(\$win)");
   }
 }
 

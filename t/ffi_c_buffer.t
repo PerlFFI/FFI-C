@@ -1,6 +1,7 @@
 use Test2::V0 -no_srand => 1;
 use FFI::C::Util qw( take owned );
 use FFI::C::Buffer;
+use Encode;
 
 subtest 'very basic' => sub {
 
@@ -21,6 +22,28 @@ subtest 'very basic' => sub {
 
   # appears to free without crashing!
   ok 1;
+
+};
+
+subtest 'copy at new' => sub {
+
+  my $buf = FFI::C::Buffer->new(\'foobar');
+
+  is(
+    $buf,
+    object {
+      call [ isa => 'FFI::C::Buffer' ] => T();
+      call ptr                         => match qr/^[0-9]+$/;
+      call buffer_size                 => 6;
+      call to_perl                     => 'foobar';
+    },
+  );
+
+  my $win;
+
+  $buf->window($win);
+
+  is($win, 'foobar');
 
 };
 
