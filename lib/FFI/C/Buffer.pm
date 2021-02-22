@@ -181,8 +181,47 @@ sub window
   }
   else
   {
-    croak("usage: \$buf->window(\$win)");
+    Carp::croak("usage: \$buf->window(\$win)");
   }
+}
+
+=head2 from_perl
+
+ $buf->from_perl($raw)
+ $buf->from_perl($raw, $size)
+
+Copies the raw data from C<$raw> into the buffer.  In the first form the size copied is
+computed from the size of the scalar C<$raw>.  If the size of C<$raw> is larger than
+the buffer, then an exception will be thrown.
+
+In the second form, C<$size> bytes will be copied.  If this is larger than C<$raw> or
+larger than the buffer then an exception will be thrown.
+
+=cut
+
+sub from_perl
+{
+  my $self = shift;
+  if(@_ == 1)
+  {
+    my($src_ptr, $src_size) = FFI::Platypus::Buffer::scalar_to_buffer($_[0]);
+    Carp::croak("Source scalar is larger than the buffer") if $src_size > $self->buffer_size;
+    FFI::C::FFI::memcpy($self->{ptr}, $src_ptr, $src_size);
+  }
+  elsif(@_ == 2)
+  {
+    my $size = pop;
+    my($src_ptr, $src_size) = FFI::Platypus::Buffer::scalar_to_buffer($_[0]);
+    Carp::croak("Specified size is larger than source string") if $size > $src_size;
+    Carp::croak("Specified size is larger than the buffer") if $size > $self->buffer_size;
+    FFI::C::FFI::memcpy($self->{ptr}, $src_ptr, $size);
+  }
+  else
+  {
+    Carp::croak("usage: \$buf->from_perl(\$raw [, \$size])");
+  }
+
+  1;
 }
 
 1;

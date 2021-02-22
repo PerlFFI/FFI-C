@@ -91,6 +91,10 @@ sub c_to_perl ($)
 
     return \%h;
   }
+  elsif($inst->isa('FFI::C::Buffer'))
+  {
+    return $inst->to_perl;
+  }
   else
   {
     my %h;

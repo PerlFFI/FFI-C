@@ -1,5 +1,5 @@
 use Test2::V0 -no_srand => 1;
-use FFI::C::Util qw( take owned );
+use FFI::C::Util qw( take owned perl_to_c c_to_perl );
 use FFI::C::Buffer;
 use Encode;
 
@@ -25,7 +25,7 @@ subtest 'very basic' => sub {
 
 };
 
-subtest 'copy at new' => sub {
+subtest 'copy' => sub {
 
   my $buf = FFI::C::Buffer->new(\'foobar');
 
@@ -40,11 +40,29 @@ subtest 'copy at new' => sub {
   );
 
   my $win;
-
   $buf->window($win);
-
   is($win, 'foobar');
 
+  $buf->from_perl('baz');
+
+  is($buf->to_perl, 'bazbar');
+  is($win, 'bazbar');
+
+  $buf->from_perl('onetwo');
+
+  is($buf->to_perl, 'onetwo');
+  is($win, 'onetwo');
+
+  is dies { $buf->from_perl('onetwothree') }, match qr/Source scalar is larger than the buffer/;
+  is dies { $buf->from_perl('xo', 3) }, match qr/Specified size is larger than source string/;
+
+  $buf->from_perl('foobarbaz',3);
+
+  is($buf->to_perl, 'footwo');
+  is($win, 'footwo');
+
+  is(c_to_perl($buf), 'footwo');
+  # TODO? what do do with perl_to_c
 };
 
 subtest 'take and reconstitute' => sub {
