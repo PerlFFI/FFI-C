@@ -26,6 +26,11 @@ enough space is allocated to store the string, including its NULL termination.
 This class endeavors to ensure the string contain only ASCII characters.  If non-ASCII
 characters are seen passing to or from C space then this class will throw an exception.
 
+Typically the C<string> built-in type that comes with L<FFI::Platypus> will work just
+fine for ASCII strings, without needing this class.  Where this class may come in handy
+is when you have to keep a C string around for multiple calls into C space, or passing
+a string from one C API to another.
+
 =head1 CONSTRUCTOR
 
 =head2 new
@@ -157,6 +162,8 @@ $FFI::C::FFI::ffi->attach( [ 'strncat' => 'strcat' ] => ['opaque','string','size
 
 =item L<FFI::C::ArrayDef>
 
+=item L<FFI::C::ASCIIString>
+
 =item L<FFI::C::Buffer>
 
 =item L<FFI::C::Def>
@@ -164,6 +171,8 @@ $FFI::C::FFI::ffi->attach( [ 'strncat' => 'strcat' ] => ['opaque','string','size
 =item L<FFI::C::File>
 
 =item L<FFI::C::PosixFile>
+
+=item L<FFI::C::String>
 
 =item L<FFI::C::Struct>
 
