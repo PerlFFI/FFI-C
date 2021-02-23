@@ -79,6 +79,31 @@ sub new
   }
 }
 
+=head1 ATTRIBUTES
+
+=head2 encoding_name
+
+ my $name = FFI::C::ASCIIString->encoding_name;
+ my $name = $str->encoding_name;
+
+Returns the name of the string encoding.  For this class it should always be C<ascii>.
+
+=cut
+
+sub encoding_name { 'ascii' }
+
+=head2 encoding_width
+
+ my $width = FFI::C::ASCIIString->encoding_width;
+ my $width = $str->encoding_width;
+
+Returns the size of a character, if the encoding has fixed width characters.  For this
+class it should always be C<1>.
+
+=cut
+
+sub encoding_width { 1 }
+
 =head1 METHODS
 
 =head2 to_perl

@@ -15,6 +15,9 @@ subtest 'very basic' => sub {
       call to_perl => 'foobar';
       call buffer_size => 7;
       call strlen => 6;
+
+      call encoding_name  => 'ascii';
+      call encoding_width => 1;
     },
   );
 
