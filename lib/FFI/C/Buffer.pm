@@ -50,9 +50,6 @@ sub new
 {
   my $class = shift;
 
-  Carp::croak("You cannot create an instance of FFI::C::String directly")
-    if $class eq 'FFI::C::String';
-
   my $buffer_size;
   my $ptr;
   my $owner;

@@ -52,31 +52,12 @@ sub new
 {
   my $class = shift;
 
-  if(@_ == 1)
+  if(@_ == 1 && is_plain_scalarref $_[0] && !is_ref ${$_[0]})
   {
-    if(is_plain_scalarref $_[0] && !is_ref ${$_[0]})
-    {
-      Carp::croak("Non ASCII characters found in string") if ${$_[0]} =~ /[^[:ascii:]]/;
+    Carp::croak("Non ASCII characters found in string") if ${$_[0]} =~ /[^[:ascii:]]/;
+  }
 
-      return ${$_[0]} =~ /\0/
-        ? $class->SUPER::new($_[0])
-        : $class->SUPER::new(\"${$_[0]}\0");
-    }
-    elsif(!is_ref $_[0])
-    {
-      my $self = $class->SUPER::new(@_);
-      $self->from_perl("\0");
-      return $self;
-    }
-    else
-    {
-      return $class->SUPER::new(@_);
-    }
-  }
-  else
-  {
-    return $class->SUPER::new(@_);
-  }
+  $class->SUPER::new(@_);
 }
 
 =head1 ATTRIBUTES
@@ -131,6 +112,8 @@ sub to_perl
 
  $str->from_perl($perl_string);
  $str->from_perl($perl_string, $size);
+
+Copy the content of a Perl into the C string.
 
 =cut
 
