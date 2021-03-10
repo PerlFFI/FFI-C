@@ -9,7 +9,7 @@ use Carp ();
 use Class::Inspector;
 use base qw( Exporter );
 
-our @EXPORT_OK = qw( perl_to_c c_to_perl take owned set_array_count );
+our @EXPORT_OK = qw( perl_to_c c_to_perl take owned set_array_count addressof );
 
 # ABSTRACT: Utility functions for dealing with structured C data
 # VERSION
@@ -170,6 +170,29 @@ sub take ($)
   Carp::croak("Not an object") unless is_blessed_ref $inst;
   Carp::croak("Object is owned by someone else") if $inst->{owner};
   my $ptr = delete $inst->{ptr};
+  Carp::croak("Object pointer went away") unless $ptr;
+  $ptr;
+}
+
+=head2 addressof
+
+[version 0.11]
+
+ my $ptr = addressof $instance;
+
+This function returns the address (as an C<opaque> type) of the
+instance object.  This is similar to C<take> above in that it gets
+you the address of the object, but doesn't take ownership of it,
+so care needs to be taken when using C<$ptr> that the object
+is still allocated.
+
+=cut
+
+sub addressof ($)
+{
+  my $inst = shift;
+  Carp::croak("Not an object") unless is_blessed_ref $inst;
+  my $ptr = $inst->{ptr};
   Carp::croak("Object pointer went away") unless $ptr;
   $ptr;
 }

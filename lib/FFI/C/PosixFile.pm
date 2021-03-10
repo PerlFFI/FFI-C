@@ -11,7 +11,7 @@ use base qw( FFI::C::File );
 =head1 SYNOPSIS
 
  use FFI::C::PosixFile;
-
+ 
  my $stdout = FFI::C::PosixFile->fdopen(1, "w");
  say $stdout->fileno;  # prints 1
 
