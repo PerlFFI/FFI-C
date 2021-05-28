@@ -57,3 +57,8 @@ jobs:
         run: dzil run --no-build 'cpanm --installdeps .'
       - name: Run Tests
         run: dzil test -v
+
+      - name: CPAN log
+        if: ${{ failure() }}
+        run: |
+          cip exec bash -c 'cat $HOME/.cpanm/latest-build/build.log'
