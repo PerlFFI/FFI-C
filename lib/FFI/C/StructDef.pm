@@ -268,7 +268,7 @@ sub new
                   $all->($ptr, $array, (@$array * $unitsize));
                   # we don't want to have to get the array and tie it if
                   # it isn't going to be used anyway.
-                  return unless defined wantarray;  ## no critic (Freenode::Wantarray)
+                  return unless defined wantarray;  ## no critic (Community::Wantarray)
                 }
                 elsif(! is_ref $_[0])
                 {
