@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use 5.008001;
 use Ref::Util qw( is_blessed_ref is_plain_arrayref is_plain_hashref is_ref is_blessed_hashref );
-use Sub::Identify ();
+use Sub::Identify 0.05 ();
 use Carp ();
 use Class::Inspector;
 use base qw( Exporter );
