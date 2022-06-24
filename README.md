@@ -99,8 +99,14 @@ This distribution provides tools for building classes to interface for common C
 data types.  Arrays, `struct`, `union` and nested types based on those are
 supported.
 
+Core [FFI::Platypus](https://metacpan.org/pod/FFI::Platypus) also provides [FFI::Platypus::Record](https://metacpan.org/pod/FFI::Platypus::Record) for manipulating and
+passing structured data.  Typically you want to use [FFI::C](https://metacpan.org/pod/FFI::C) instead, the main
+exception is when you need to pass structured data by value instead of by
+reference.
+
 To work with C APIs that work with C file pointers you can use
-[FFI::C::File](https://metacpan.org/pod/FFI::C::File) and [FFI::C::PosixFile](https://metacpan.org/pod/FFI::C::PosixFile).
+[FFI::C::File](https://metacpan.org/pod/FFI::C::File) and [FFI::C::PosixFile](https://metacpan.org/pod/FFI::C::PosixFile).  For C APIs that expose the POSIX
+`stat` structure use [FFI::C::Stat](https://metacpan.org/pod/FFI::C::Stat).
 
 # METHODS
 
@@ -278,7 +284,7 @@ Graham Ollis <plicease@cpan.org>
 
 # COPYRIGHT AND LICENSE
 
-This software is copyright (c) 2020,2021 by Graham Ollis.
+This software is copyright (c) 2020-2022 by Graham Ollis.
 
 This is free software; you can redistribute it and/or modify it under
 the same terms as the Perl 5 programming language system itself.
