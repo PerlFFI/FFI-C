@@ -25,8 +25,14 @@ This distribution provides tools for building classes to interface for common C
 data types.  Arrays, C<struct>, C<union> and nested types based on those are
 supported.
 
+Core L<FFI::Platypus> also provides L<FFI::Platypus::Record> for manipulating and
+passing structured data.  Typically you want to use L<FFI::C> instead, the main
+exception is when you need to pass structured data by value instead of by
+reference.
+
 To work with C APIs that work with C file pointers you can use
-L<FFI::C::File> and L<FFI::C::PosixFile>.
+L<FFI::C::File> and L<FFI::C::PosixFile>.  For C APIs that expose the POSIX
+C<stat> structure use L<FFI::C::Stat>.
 
 =head1 METHODS
 
