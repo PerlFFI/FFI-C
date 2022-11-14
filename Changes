@@ -1,6 +1,7 @@
 Revision history for {{$dist->name}}
 
 {{$NEXT}}
+  - Update test for NetBSD (gh#60)
 
 0.12      2022-06-24 10:08:47 -0500
   - Documentation improvements (gh#58)
