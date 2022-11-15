@@ -172,6 +172,9 @@ Re-open the file stream.  If C<$filename> is C<undef>, then the same file is reo
 This can be useful for reopening a file in a different mode.  Note that the mode
 changes that are allowed are platform dependent.
 
+On some platforms (Linux, macOS and possibly some others) you can pass C<undef> as
+the C<$filename>.  This is a way to change the C<$mode> without changing the file.
+
 =cut
 
 $ffi->attach( freopen => ['string','string','FILE'] => 'opaque' => sub {
