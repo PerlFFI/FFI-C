@@ -280,7 +280,11 @@ So-called "pass-by-value" is not and will not be supported.  For
 
 # AUTHOR
 
-Graham Ollis <plicease@cpan.org>
+Author: Graham Ollis <plicease@cpan.org>
+
+Contributors:
+
+Mason James
 
 # COPYRIGHT AND LICENSE
 
