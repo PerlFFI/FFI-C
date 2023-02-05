@@ -93,7 +93,7 @@ is(
         call blue  => 6;
       };
     },
-    'initalizers',
+    'initializers',
   );
 
   is(

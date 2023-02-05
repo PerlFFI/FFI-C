@@ -244,7 +244,7 @@ is(
       call green => 2;
       call blue => 3;
     },
-    'initalizers',
+    'initializers',
   );
 
   FFI::C::StructDef->new(

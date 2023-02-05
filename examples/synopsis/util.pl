@@ -12,7 +12,7 @@ my $def = FFI::C::StructDef->new(
 );
 my $inst = $def->create;
 
-# initalize members
+# initialize members
 perl_to_c($inst, { x => 1, y => 2 });
 
 # take ownership
