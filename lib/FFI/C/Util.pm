@@ -39,13 +39,13 @@ sub perl_to_c ($$)
   my($inst, $values) = @_;
   if(is_blessed_ref $inst && $inst->isa('FFI::C::Array'))
   {
-    Carp::croak("Tried to initalize a @{[ ref $inst ]} with something other than an array reference")
+    Carp::croak("Tried to initialize a @{[ ref $inst ]} with something other than an array reference")
       unless is_plain_arrayref $values;
     &perl_to_c($inst->get($_), $values->[$_]) for 0..$#$values;
   }
   elsif(is_blessed_ref $inst)
   {
-    Carp::croak("Tried to initalize a @{[ ref $inst ]} with something other than an hash reference")
+    Carp::croak("Tried to initialize a @{[ ref $inst ]} with something other than an hash reference")
       unless is_plain_hashref $values;
     foreach my $name (keys %$values)
     {

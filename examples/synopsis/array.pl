@@ -37,7 +37,7 @@ printf "[[%d %d][%d %d]]\n",
   $square->[0]->x, $square->[0]->y,
   $square->[1]->x, $square->[1]->y;   # [[2 1][3 2]]
 
-# Create a rectange usingn the generated class
+# Create a rectangle using the generated class
 my $rect = Rectangle->new;
 $rect->[0]->x(1.0);
 $rect->[0]->y(1.0);
