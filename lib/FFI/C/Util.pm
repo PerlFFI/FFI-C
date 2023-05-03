@@ -91,6 +91,10 @@ sub c_to_perl ($)
 
     return \%h;
   }
+  elsif($inst->isa('FFI::C::Buffer'))
+  {
+    return $inst->to_perl;
+  }
   else
   {
     my %h;
@@ -230,11 +234,17 @@ sub set_array_count ($$)
 
 =item L<FFI::C::ArrayDef>
 
+=item L<FFI::C::ASCIIString>
+
+=item L<FFI::C::Buffer>
+
 =item L<FFI::C::Def>
 
 =item L<FFI::C::File>
 
 =item L<FFI::C::PosixFile>
+
+=item L<FFI::C::String>
 
 =item L<FFI::C::Struct>
 

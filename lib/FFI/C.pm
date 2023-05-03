@@ -267,11 +267,17 @@ So-called "pass-by-value" is not and will not be supported.  For
 
 =item L<FFI::C::ArrayDef>
 
+=item L<FFI::C::ASCIIString>
+
+=item L<FFI::C::Buffer>
+
 =item L<FFI::C::Def>
 
 =item L<FFI::C::File>
 
 =item L<FFI::C::PosixFile>
+
+=item L<FFI::C::String>
 
 =item L<FFI::C::Struct>
 
