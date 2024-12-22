@@ -18,12 +18,14 @@ jobs:
       matrix:
         cip_tag:
           - static
-          - "5.37"
+          - "5.41"
+          - "5.40"
+          - "5.40-buster32"
+          - "5.40-threads"
+          - "5.40-longdouble"
+          - "5.40-quadmath"
+          - "5.38"
           - "5.36"
-          - "5.36-buster32"
-          - "5.36-threads"
-          - "5.36-longdouble"
-          - "5.36-quadmath"
           - "5.34"
           - "5.32"
           - "5.30"

@@ -3,3 +3,6 @@
 /corpus/examples/arch/
 *.swp
 _build
+/.build
+*.old
+*.orig
